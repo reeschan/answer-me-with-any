@@ -53,6 +53,7 @@ let cdp;
 let session;
 let file;
 let closingFile;
+let envelopeFile;
 
 const send = (method, params) => cdp.send(method, params, session);
 const evaluate = async (expression) => {
@@ -72,6 +73,12 @@ before(async () => {
   writeFileSync(join(tmp, 'd.md'), DRAFT);
   file = join(tmp, 'page.html');
   execFileSync(process.execPath, [join(ROOT, 'bin/am.js'), 'render', join(tmp, 'd.md'), '-o', file, '--no-open'], {
+    env: { ...process.env, AM_NO_UPDATE_CHECK: '1', AM_HOME: join(tmp, 'home') }, stdio: 'pipe',
+  });
+  const envelopeDraft = join(tmp, 'envelope.md');
+  writeFileSync(envelopeDraft, DRAFT.replace('lang: en\n', 'lang: en\nreply-meta-a: x\nreply-meta-b: y\n'));
+  envelopeFile = join(tmp, 'envelope.html');
+  execFileSync(process.execPath, [join(ROOT, 'bin/am.js'), 'render', envelopeDraft, '-o', envelopeFile, '--no-open'], {
     env: { ...process.env, AM_NO_UPDATE_CHECK: '1', AM_HOME: join(tmp, 'home') }, stdio: 'pipe',
   });
   // The same draft, made while close_after_reply is on.
@@ -101,6 +108,67 @@ after(async () => {
   } catch (e) {
     console.warn(`Could not remove ${tmp}: ${e.message}`);
   }
+});
+
+// Capture the actual clipboard contents after clicking Copy in the reply sheet.
+const copySheet = async (page) => {
+  await cdp.send('Browser.grantPermissions', { permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'] });
+  await load(page);
+  const r = await send('Runtime.evaluate', { userGesture: true, awaitPromise: true, returnByValue: true, expression: `(async () => {
+    await navigator.clipboard.writeText('SEED');
+    document.querySelector('input[value="Memcached"]').click();
+    document.querySelector('[data-am="reply"]').click();
+    const view = document.querySelector('dialog.am-reply .am-reply-meta-view')?.textContent ?? null;
+    document.querySelector('dialog.am-reply [data-act="copy"]').click();
+    await new Promise((r) => setTimeout(r, 100));
+    return { view, text: await navigator.clipboard.readText() };
+  })()` });
+  if (r.exceptionDetails) throw new Error(`page script error: ${r.exceptionDetails.exception?.description ?? r.exceptionDetails.text}`);
+  return r.result.value;
+};
+
+test('reply envelope: Copy includes the metadata block and the sheet displays it', { skip: SKIP }, async () => {
+  const result = await copySheet(envelopeFile);
+  // The system clipboard on Windows turns LF into CRLF.
+  assert.ok(result.text.replace(/\r\n/g, '\n').endsWith('\n```am-reply-meta\n{"a":"x","b":"y"}\n```\n'), JSON.stringify(result));
+  assert.ok(result.view?.includes('{"a":"x","b":"y"}'));
+  await evaluate('localStorage.clear()');
+});
+
+test('reply envelope: Copy without metadata has no metadata block', { skip: SKIP }, async () => {
+  const result = await copySheet(file);
+  assert.ok(result.text.startsWith('# Re:'));
+  assert.doesNotMatch(result.text, /am-reply-meta/);
+  assert.equal(result.view, null);
+  await evaluate('localStorage.clear()');
+});
+
+test('reply envelope: an older saved answer is restored with the same reply body', { skip: SKIP }, async () => {
+  await load(file);
+  await evaluate(`(() => {
+    localStorage.setItem('am-reply:' + location.pathname, JSON.stringify({ asks: {
+      'Which cache do we use?': { picked: ['Memcached'], touched: true },
+    } }));
+  })()`);
+  await load();
+  const original = await evaluate(`(() => {
+    document.querySelector('[data-am="reply"]').click();
+    return document.querySelector('dialog.am-reply textarea').value;
+  })()`);
+  await load(envelopeFile);
+  await evaluate(`(() => {
+    localStorage.setItem('am-reply:' + location.pathname, JSON.stringify({ asks: {
+      'Which cache do we use?': { picked: ['Memcached'], touched: true },
+    } }));
+  })()`);
+  await load(envelopeFile);
+  const restored = await evaluate(`(() => {
+    document.querySelector('[data-am="reply"]').click();
+    return { checked: document.querySelector('input[value="Memcached"]').checked, text: document.querySelector('dialog.am-reply textarea').value };
+  })()`);
+  assert.equal(restored.checked, true);
+  assert.equal(restored.text, original + '\n```am-reply-meta\n{"a":"x","b":"y"}\n```\n');
+  await evaluate('localStorage.clear()');
 });
 
 test('reply: picks and comments become one reply, and both survive a reload', { skip: SKIP }, async () => {
