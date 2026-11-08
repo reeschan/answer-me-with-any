@@ -10,7 +10,7 @@ import { lintDoc } from './lint/ste.js';
 import { esc } from './svg/text.js';
 import { scaleSvgBoxes } from './svg/shapes.js';
 import { SCALE } from './themes/type-scale.js';
-import { VERSION, RUNTIME_JS, TABLE_JS, DELTA_JS, UPDATE_JS, CLOSE_AFTER_JS } from './assets.js';
+import { VERSION, RUNTIME_JS, RUNTIME_REPLY_META_JS, TABLE_JS, DELTA_JS, UPDATE_JS, CLOSE_AFTER_JS } from './assets.js';
 import { rootTag, rootCarrierAttrs, sourceTag } from './page.js';
 import { resolveLanguage } from './language.js';
 import { inlineImages, remoteImages, ImageError, IMAGE_EXAMPLE } from './images.js';
@@ -77,7 +77,7 @@ export function renderDoc(source, overrides = {}, defaults = {}, { themes = BUIL
   const page = TEMPLATES[doc.meta.template]({ meta: doc.meta, introHtml, panels, ui, language });
   // A right-to-left page isolates each run of text with no right-to-left letter as left to right (src/bidi.js).
   const body = language.dir === 'rtl' ? isolateLtrRuns(page) : page;
-  const html = shell({ meta: doc.meta, language, body, source, embedded: themes.embedFor(doc.meta.theme, 'page'), update, closeAfter, colophon, scale });
+  const html = shell({ meta: doc.meta, language, body, source, embedded: themes.embedFor(doc.meta.theme, 'page'), update, closeAfter, colophon, scale, replyMeta: doc.replyMeta });
   return { html, warnings, stats, meta: doc.meta, language };
 }
 
@@ -239,6 +239,13 @@ function colophon(language) {
 // template's header is the first one in the body: the intro and the panels come after it.
 const withColophon = (body, language) => body.replace('<header class="am-head">', (head) => `${head}${colophon(language)}`);
 
+function withReplyMeta(body, entries, ui) {
+  const data = esc(JSON.stringify(Object.fromEntries(entries)));
+  const rows = entries.map(([name, value]) => `<dt>${esc(name)}</dt><dd>${esc(value)}</dd>`).join('');
+  const details = `<details class="am-reply-meta" dir="ltr" data-am-reply-meta="${data}"><summary>${esc(ui.replyMeta.summary)}</summary><dl>${rows}</dl></details>`;
+  return body.replace(/(<header class="am-head">(?:<p class="am-colophon">[^]*?<\/p>)?)/, (head) => `${head}${details}`);
+}
+
 // The new-version button and its popover (a native popover, so it opens, closes on Esc and on a click outside with no script). The
 // button starts hidden; src/runtime/update.js shows it where the browser has popovers. withoutUpdateNotice takes both out again.
 function updateNotice(ui, update, labelKey) {
@@ -314,7 +321,7 @@ function scaleButtons(ui) {
   return `${button('scale-down', ui.scale.down, 'A−')}${button('scale-up', ui.scale.up, 'A+')}`;
 }
 
-function shell({ meta, language, body, source, embedded, update, closeAfter, colophon, scale }) {
+function shell({ meta, language, body, source, embedded, update, closeAfter, colophon, scale, replyMeta }) {
   const { ui, labelKey } = language;
   const notice = updateNotice(ui, update, labelKey);
   const pick = (name, label, values, current) => `<label class="am-pick">${esc(label)}<select data-am="${name}">${values
@@ -322,7 +329,8 @@ function shell({ meta, language, body, source, embedded, update, closeAfter, col
   const root = { lang: language.htmlLang, dir: language.dir, theme: meta.theme, mode: meta.mode, style: meta.style, scale };
   // The one inline script, as the browser reads it: the policy pins a hash of exactly this text.
   const interactiveTable = body.includes('<table data-am-table=');
-  const script = `\n${RUNTIME_JS}${interactiveTable ? TABLE_JS : ''}${hasDelta(body) ? DELTA_JS : ''}${update ? UPDATE_JS : ''}${closeAfter ? CLOSE_AFTER_JS : ''}`;
+  const script = `\n${replyMeta ? RUNTIME_REPLY_META_JS : RUNTIME_JS}${interactiveTable ? TABLE_JS : ''}${hasDelta(body) ? DELTA_JS : ''}${update ? UPDATE_JS : ''}${closeAfter ? CLOSE_AFTER_JS : ''}`;
+  const headedBody = colophon ? withColophon(body, language) : body;
   return `<!doctype html>
 ${rootTag(root)}
 <head>
@@ -332,7 +340,7 @@ ${cspMeta([script], { live: true })}
 <meta name="generator" content="Answer me with HTML ${VERSION}">
 <title>${esc(meta.title || 'Answer me with HTML')}</title>
 <style>
-${pageCss(embedded, { diff: body.includes('class="am-codeblock am-codeblock--diff"'), delta: hasDelta(body), rtl: language.dir === 'rtl', math: hasMath(body), chart: hasChart(body), table: interactiveTable, update: Boolean(update), closeAfter, scale })}
+${pageCss(embedded, { diff: body.includes('class="am-codeblock am-codeblock--diff"'), delta: hasDelta(body), rtl: language.dir === 'rtl', math: hasMath(body), chart: hasChart(body), table: interactiveTable, update: Boolean(update), closeAfter, scale, ...(replyMeta ? { replyMeta: true } : {}) })}
 </style>
 </head>
 <body>
@@ -344,7 +352,7 @@ ${scaleButtons(ui)}
 <button class="am-btn am-btn--remark" type="button" data-am="remark" data-ui="${esc(JSON.stringify(ui.remark))}">${esc(ui.remark.button)}</button>
 <button class="am-btn" type="button" data-am="copy" data-done="${esc(ui.done)}">${esc(ui.copy)}</button>
 </div>
-${notice.popover}${colophon ? withColophon(body, language) : body}
+${notice.popover}${replyMeta ? withReplyMeta(headedBody, replyMeta, ui) : headedBody}
 ${lightboxShell(ui, body.includes('class="am-diagram'))}${sourceTag(source)}
 <script>${script}</script>
 </body>

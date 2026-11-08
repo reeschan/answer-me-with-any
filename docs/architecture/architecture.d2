@@ -1,0 +1,108 @@
+# Answer me with HTML — architecture
+# __MONO__ is the color of single-color logos. render.py replaces it with 000000 (light) and ffffff (dark) and draws two SVGs.
+# Redraw: python ~/.claude/skills/arch-diagram/versions/v1.1/scripts/render.py docs/architecture/architecture.d2
+direction: right
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+    pad: 40
+  }
+}
+
+classes: {
+  svc: {
+    shape: rectangle
+    style: {
+      border-radius: 12
+      font-size: 15
+    }
+  }
+  ext: {
+    shape: image
+    width: 64
+    height: 64
+    label.near: outside-bottom-center
+  }
+  zone: {
+    style.border-radius: 16
+  }
+  saas: {
+    style: {
+      border-radius: 16
+      stroke-dash: 3
+    }
+  }
+}
+
+user: "You (asker and reader)" {
+  class: ext
+  icon: https://icons.terrastruct.com/essentials%2F005-programmer.svg
+}
+
+agent: "Coding agent\nClaude Code, Codex, Cursor ..." {
+  class: zone
+  icon: https://cdn.simpleicons.org/anthropic/__MONO__
+
+  skill: "SKILL.md\nwhen and how to write a draft" {
+    class: svc
+    icon: https://cdn.simpleicons.org/markdown/__MONO__
+  }
+}
+
+local: "Your computer" {
+  class: zone
+  icon: https://icons.terrastruct.com/tech%2Flaptop.svg
+
+  cli: "am CLI (am.mjs)\nrender · patch · lint" {
+    class: svc
+    icon: https://cdn.simpleicons.org/nodedotjs
+  }
+  video: "am video\nexplainer video player" {
+    class: svc
+    icon: https://cdn.simpleicons.org/ffmpeg
+  }
+  serve: "am serve\nhttp for phones and LAN" {
+    class: svc
+    icon: https://icons.terrastruct.com/essentials%2F140-internet.svg
+  }
+  export: "am export\nPDF and PNG slices" {
+    class: svc
+    icon: https://cdn.simpleicons.org/googlechrome
+  }
+}
+
+browser: "Browser" {
+  class: zone
+  icon: https://icons.terrastruct.com/tech%2Fbrowser-2.svg
+
+  page: "Single-file HTML page\nthemes · diagrams · answers · Reply" {
+    class: svc
+    icon: https://cdn.simpleicons.org/html5
+  }
+}
+
+external: "Optional services" {
+  class: saas
+  direction: down
+
+  voice: "ElevenLabs\nvoice-over" {
+    class: ext
+    icon: https://cdn.simpleicons.org/elevenlabs/__MONO__
+  }
+  themes: "Theme catalog\nanswer-me-with-html.com" {
+    class: ext
+    icon: https://icons.terrastruct.com/essentials%2F092-graph%20bar.svg
+  }
+}
+
+user -> agent.skill: question
+agent.skill -> local.cli: Markdown draft
+agent.skill -> local.video: video draft
+local.cli -> browser.page: writes the page
+local.serve -> browser.page: serves {style.stroke-dash: 4}
+local.export -> browser.page: opens in Chrome {style.stroke-dash: 4}
+local.video -> external.voice: narration {style.stroke-dash: 4}
+local.cli -> external.themes: am theme add {style.stroke-dash: 4}
+browser.page -> user: reads, answers
+user -> agent: copied Reply {style.stroke-dash: 4}

@@ -91,12 +91,12 @@ export function parseDoc(source, options) {
 // sensible follows them (frontmatter, an unclosed fence, a duplicate panel ID).
 export function parseDocLoose(source, { defaults = {}, choices = {} } = {}) {
   const lines = sourceLines(source);
-  const { meta, bodyStart } = parseFrontmatter(lines, { ...DEFAULT_META, ...defaults }, { ...CHOICES, ...choices });
+  const { meta, replyMeta, bodyStart } = parseFrontmatter(lines, { ...DEFAULT_META, ...defaults }, { ...CHOICES, ...choices });
   const errors = [];
   const sections = splitSections(lines, bodyStart, errors);
   const intro = extractTitle(sections.intro, meta);
   const panels = assignIds(sections.panels);
-  return { doc: { meta, intro, panels }, errors };
+  return { doc: { meta, replyMeta, intro, panels }, errors };
 }
 
 const sourceLines = (source) => String(source).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').split('\n');
@@ -121,16 +121,32 @@ export function frontmatterValue(source, key) {
 }
 
 function parseFrontmatter(lines, base, allowed) {
-  if (lines[0]?.trim() !== '---') return { meta: { ...base }, bodyStart: 0 };
+  if (lines[0]?.trim() !== '---') return { meta: { ...base }, replyMeta: null, bodyStart: 0 };
   const end = lines.findIndex((l, i) => i > 0 && l.trim() === '---');
   if (end === -1) throw new ParseError('frontmatter is not closed: missing the closing --- line', 1);
 
   const entries = {};
+  const replyMeta = [];
+  const replyNames = new Set();
   for (let i = 1; i < end; i++) {
     const raw = stripLineComment(lines[i]).trim();
     if (!raw || raw.startsWith('#')) continue;
+    if (raw.startsWith('reply-meta-') && !/^reply-meta-[^\s:]*:/.test(lines[i])) {
+      throw new ParseError(`Cannot parse frontmatter line "${lines[i]}"; expected reply-meta-<name>: at column 1`, i + 1);
+    }
     const m = raw.match(FRONT_ENTRY);
     if (!m) throw new ParseError(`Cannot parse frontmatter line "${lines[i]}"; expected key: value`, i + 1);
+    if (m[1].startsWith('reply-meta-')) {
+      const name = m[1].slice('reply-meta-'.length);
+      const value = unquote(m[2]);
+      if (replyNames.has(name)) throw new ParseError(`Duplicate reply metadata name "${name}"`, i + 1);
+      replyNames.add(name);
+      if (!/^[a-z][a-z0-9_]{0,31}$/.test(name)) throw new ParseError(`Invalid reply metadata name "${name}"; use a lowercase letter, then up to 31 of a-z 0-9 _`, i + 1);
+      if (!/^[A-Za-z0-9._:+/=-]{1,128}$/.test(value)) throw new ParseError(`Invalid reply metadata value "${value}" for "${name}"; use 1-128 of A-Z a-z 0-9 . _ : + / = -`, i + 1);
+      if (replyMeta.length === 16) throw new ParseError('Too many reply metadata entries (maximum 16)', i + 1);
+      replyMeta.push([name, value]);
+      continue;
+    }
     entries[m[1]] = { value: coerce(m[1], unquote(m[2])), line: i + 1 };
   }
 
@@ -143,7 +159,7 @@ function parseFrontmatter(lines, base, allowed) {
     }
     meta[key] = allowed[key] ? String(value) : value;
   }
-  return { meta, bodyStart: end + 1 };
+  return { meta, replyMeta: replyMeta.length ? replyMeta : null, bodyStart: end + 1 };
 }
 
 function splitSections(lines, start, errors) {

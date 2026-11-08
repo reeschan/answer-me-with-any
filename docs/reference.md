@@ -36,6 +36,22 @@ A -> B: label
 
 Full syntax for a component: `am help <component>`.
 
+### Reply metadata
+
+An optional reply envelope is written in frontmatter as `reply-meta-<name>: <value>`, for example `reply-meta-design_id: D-012`. The name must match `^[a-z][a-z0-9_]{0,31}$` and the value, after removing quotes, must match `^[A-Za-z0-9._:+/=-]{1,128}$`. A draft may have at most 16 entries; duplicate names or invalid entries cause a parse error with the draft line. Values stay strings.
+
+Each envelope line must start in column 1, with no space before the colon in `reply-meta-<name>:`.
+
+The entries appear in a collapsed section in the page header, rather than in the ordinary metadata line. When the reply text is not empty, the copied reply ends with a newline and a fenced block containing a JSON object of the entries, followed by a newline:
+
+````text
+```am-reply-meta
+{"design_id":"D-012"}
+```
+````
+
+An empty reply stays empty. Drafts without an envelope produce the same page and reply as before. For `template: video`, entries are validated but neither displayed nor attached to a reply.
+
 ## Answer on the page
 
 Every page has a **Reply** button. The reader comments on any panel (the speech-bubble button in its title bar) and copies one Markdown reply back to the agent. Answers and comments survive a reload. Once the reader answers, comments or remarks, a bar at the bottom of the page shows the counts and copies the reply in one click; the Reply sheet shows the reply drawn, with the copied Markdown under a fold.

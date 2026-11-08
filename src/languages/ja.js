@@ -33,6 +33,7 @@ export default {
       raw: 'コピーされるテキストを表示', preview: 'プレビュー',
       count: { answered: '回答済み {n} 件', comments: 'コメント {n} 件', remarks: '注記 {n} 件' },
     },
+    replyMeta: { summary: '返信メタデータ' },
     closeAfter: { closing: '{n} 秒後にこのタブを閉じます', keep: '開いたままにする', closeFailed: '返信をコピーしました。このタブを閉じて構いません。' },
     toc: '目次', flow: 'フローチャート', sequence: 'シーケンス図', er: 'ER 図', colon: '：', sep: '、',
     expand: '拡大表示', close: '閉じる', diagram: 'ダイアグラム',

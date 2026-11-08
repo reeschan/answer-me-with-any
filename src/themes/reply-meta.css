@@ -1,0 +1,10 @@
+/* Collapsed metadata in the header and the metadata block in the reply sheet. */
+.am-reply-meta { margin-block-start: 1em; color: var(--ink); }
+.am-reply-meta summary { cursor: pointer; }
+.am-reply-meta dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: .25em 1em; }
+.am-reply-meta dt { font-weight: 600; }
+.am-reply-meta dd { margin: 0; font-family: monospace; overflow-wrap: anywhere; }
+.am-reply-meta-view { white-space: pre-wrap; overflow-wrap: anywhere; font-family: monospace; }
+@media print {
+  .am-reply-meta { display: none !important; }
+}

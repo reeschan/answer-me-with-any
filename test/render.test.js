@@ -96,6 +96,30 @@ test('render: the header has title, subtitle, extra meta and intro', () => {
   assert.match(html, /<strong>加粗<\/strong>/);
 });
 
+test('render: reply metadata is shown after the colophon and selects its runtime and CSS', () => {
+  const source = '---\nlang: en\ntitle: Example\nreply-meta-z: a+b/==\nreply-meta-first: x_y\n---\nIntro';
+  const { html } = renderDoc(source);
+  const details = '<details class="am-reply-meta" dir="ltr" data-am-reply-meta="{&quot;z&quot;:&quot;a+b/==&quot;,&quot;first&quot;:&quot;x_y&quot;}"><summary>Reply metadata</summary><dl><dt>z</dt><dd>a+b/==</dd><dt>first</dt><dd>x_y</dd></dl></details>';
+  assert.ok(html.includes(`</p>${details}<h1>Example</h1>`));
+  assert.match(html, /withReplyMeta/);
+  assert.match(html, /\.am-reply-meta/);
+  assert.doesNotMatch(html, /<b>reply-meta-/);
+
+  const withoutColophon = renderDoc(source, {}, {}, { colophon: false }).html;
+  assert.ok(withoutColophon.includes(`<header class="am-head">${details}<h1>Example</h1>`));
+  const plain = renderDoc(source.replace(/^reply-meta-.*\n/gm, ''), {}, {}, { colophon: false }).html;
+  assert.doesNotMatch(plain, /withReplyMeta|\.am-reply-meta|<details class="am-reply-meta"/);
+  const header = (page) => page.match(/<header class="am-head">[^]*?<\/header>/)[0].replace(details, '');
+  assert.equal(header(withoutColophon), header(plain));
+  const replyButton = (page) => page.match(/<button class="am-btn am-btn--reply"[^]*?<\/button>/)[0];
+  assert.equal(replyButton(withoutColophon), replyButton(plain));
+});
+
+test('render: reply metadata remains left-to-right in a Hebrew page', () => {
+  const { html } = renderDoc('---\nlang: he\ntitle: בדיקה\nreply-meta-key: value_1\n---\nשלום');
+  assert.match(html, /<details class="am-reply-meta" dir="ltr" data-am-reply-meta="\{&quot;key&quot;:&quot;value_1&quot;\}"><summary>[^<]+<\/summary><dl><dt>key<\/dt><dd>value_1<\/dd><\/dl><\/details>/);
+});
+
 test('render: status words in tables render as badges', () => {
   const { html } = renderDoc(SRC);
   assert.match(html, /am-status--ok"><span class="am-status-icon" aria-hidden="true">✓<\/span><span class="am-status-text">已批准<\/span><\/span>/);
