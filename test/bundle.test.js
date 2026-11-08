@@ -22,13 +22,15 @@ test('bundle: the skill directory still renders after it is copied out alone', (
 
     const out = join(dir, 'out.html');
     const r = spawnSync(process.execPath, [cli, 'render', '-', '-o', out], {
-      input: '---\ntitle: 打包测试\n---\n## A\n```flow\nA -> B\n```\n', encoding: 'utf8', env, cwd: dir,
+      input: '---\ntitle: 打包测试\nreply-meta-a: x\n---\n## A\n```flow\nA -> B\n```\n', encoding: 'utf8', env, cwd: dir,
     });
     assert.equal(r.status, 0, r.stderr);
     const html = readFileSync(out, 'utf8');
     assert.match(html, /<h1>打包测试<\/h1>/);
     assert.match(html, /class="am-node /);
     assert.match(html, /--font-mono/, 'CSS is inlined');
+    assert.match(html, /<details class="am-reply-meta"/);
+    assert.match(html, /withReplyMeta/);
 
     const patched = spawnSync(process.execPath, [cli, 'patch', out, '--panel', 'A'], {
       input: '## A\n只改这一格。\n', encoding: 'utf8', env, cwd: dir,
