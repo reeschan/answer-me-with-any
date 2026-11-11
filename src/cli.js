@@ -28,6 +28,7 @@ import { hasCommand, renameOver, isDenied } from './sys.js';
 import { loadMath } from './math-load.js';
 import { replacePanel, PatchError } from './patch.js';
 import { readState } from './state.js';
+import { toChatMarkdown, RENDER_FORMAT, FORMATS } from './chat-markdown.js';
 import { readPage } from './page.js';
 import { readEmbeddedImages } from './images.js';
 import { readEmbeddedCode, MAX_CODE_LINES, LONG_CODE_LINES } from './code.js';
@@ -40,7 +41,7 @@ const USAGE = `Answer me with HTML ${VERSION} — renders a Markdown draft into 
 
 Usage:
   am render <file|->  [-o <file>] [--replace <page>] [--no-open] [--theme ${['auto', ...themeNames('page')].join('|')}]
-                      [--template sheet|doc] [--style off|80|strict] [--mode auto|light|dark]
+                      [--template sheet|doc] [--style off|80|strict] [--mode auto|light|dark] [--format html|md]
   am patch  <html> --panel <title> [file|-] [--from file] [--theme …] [--no-open]
                                                   replace one ## panel of an existing page and overwrite that HTML in place
   am video  <file|->  [-o <file>] [--voice auto|elevenlabs|local|system|off | --audio-map <file.json>]
@@ -61,6 +62,7 @@ Usage:
 - A file argument of - reads from stdin (good for heredoc: am render - <<'EOF' ... EOF).
 - -o names an output file, for example -o page.html; it does not name a folder.
 - Output goes to ~/.answer-me-with-html/pages/ by default (change it with the AM_HOME environment variable).
+- --format md writes no page: it prints the same content as chat Markdown on stdout (asks become numbered options, no reply metadata) and the draft notes on stderr. am config set format md makes it the default.
 - A page with STE or code warnings does not open. Fix the draft and render again with --replace <page>: the earlier page is deleted once the new one is written.
 - Set auto-open, the default theme and more with am config; --open / --no-open apply to this run only.
 - am patch reads the source draft from the page's hidden #am-source, changes only the ## section that --panel names, and writes the page back to the same path.`;
@@ -234,6 +236,7 @@ export async function main(argv, io = {}) {
         open: { type: 'boolean' },
         theme: { type: 'string' },
         template: { type: 'string' },
+        format: { type: 'string' },
         style: { type: 'string' },
         mode: { type: 'string' },
         voice: { type: 'string' },
@@ -335,13 +338,22 @@ export function shouldOpen(opts, env, config) {
 
 async function cmdRender(src, opts, ctx, baseDir, from) {
   const { fail, print } = ctx;
+  const config = loadConfig(ctx);
+  const { theme, mode, style } = config.values;
+  const format = opts.format ?? config.values.format;
+  if (!FORMATS.includes(format)) {
+    fail(`✗ Invalid format value "${format}". Choose one of: ${FORMATS.join(' | ')}`);
+    return 2;
+  }
+  if (format === RENDER_FORMAT.MD && (opts.out !== undefined || opts.replace !== undefined)) {
+    fail('✗ --format md writes no page, so it takes no -o or --replace');
+    return 2;
+  }
   const replaced = opts.replace === undefined ? null : pagePath(opts.replace, ctx);
   if (replaced === false) {
     fail(`✗ --replace takes a page that am render wrote (a .html file in ${join(amHome(ctx.env), 'pages')} or ${join(tempHome(), 'pages')})`);
     return 2;
   }
-  const config = loadConfig(ctx);
-  const { theme, mode, style } = config.values;
   await loadMath(src);
   let result;
   try {
@@ -349,6 +361,7 @@ async function cmdRender(src, opts, ctx, baseDir, from) {
   } catch (e) {
     return reportDraftError(e, src, from, ctx);
   }
+  if (format === RENDER_FORMAT.MD) return printChat(result, src, from, ctx);
   const file = outputPath('pages', nameSource(result.meta), opts, ctx);
   if (!file) return 2;
   const written = emit(result, file, ctx, { fallback: opts.out ? undefined : 'pages' });
@@ -361,6 +374,15 @@ async function cmdRender(src, opts, ctx, baseDir, from) {
   const held = !opts.open && hasRetryWarnings(result) && shouldOpen(opts, ctx.env, config.values);
   if (held) print(`  Not opened because of the warnings; to render again, add --replace ${written}`);
   return finish(written, held ? { ...opts, 'no-open': true } : opts, config, ctx);
+}
+
+// --format md: the chat Markdown is the only text on stdout; every note on the draft goes to stderr in the same form as for a page.
+function printChat(result, src, from, ctx) {
+  const notes = { ...ctx, print: ctx.fail };
+  printDraftNotes(result, notes.print);
+  keepDraft(result, src, from, notes);
+  ctx.print(toChatMarkdown(src, result.language, { choices: { theme: ctx.themes.choices('page') } }).trimEnd());
+  return 0;
 }
 
 // The new-version button for the page, from the version the background check last saw (src/update.js).
@@ -885,6 +907,12 @@ function emit(result, file, ctx, { note = '', fallback, inPlace } = {}) {
   print(`  ${summaryLine(result)}${note}`);
   // The code the page now holds, so the user can check it before sharing the page.
   if (result.stats.code?.length) print(`  code embedded from: ${result.stats.code.join(', ')}`);
+  printDraftNotes(result, print);
+  return saved.file;
+}
+
+// The warnings on a draft that rendered: long code, diagram, raw HTML, math and STE.
+function printDraftNotes(result, print) {
   const long = result.stats.codeWarnings ?? [];
   if (long.length) {
     print(`  code ${count(long.length, 'warning')} (trim the block and run again, or keep it if every line matters):`);
@@ -894,7 +922,6 @@ function emit(result, file, ctx, { note = '', fallback, inPlace } = {}) {
   printHtmlWarnings(result.stats.htmlWarnings, print);
   printMathWarnings(result.stats.mathWarnings, print);
   printWarnings(result.warnings, print, result.meta.style);
-  return saved.file;
 }
 
 // What a component noticed in its own block (a group box that would be empty after a change). The page is still written.

@@ -28,6 +28,7 @@ export default {
       count: { answered: '已作答 {n} 项', comments: '评论 {n} 条', remarks: '标注 {n} 处' },
     },
     replyMeta: { summary: '回复元数据' },
+    chat: { htmlOnly: '此图只在 HTML 页面中', multi: '可多选' },
     closeAfter: { closing: '{n} 秒后关闭此标签页', keep: '保持打开', closeFailed: '回复已复制，现在可以关闭此标签页。' },
     toc: '目录', flow: '流程图', sequence: '时序图', er: '实体关系图', colon: '：', sep: '、',
     expand: '展开查看图表', close: '关闭', diagram: '图表查看',

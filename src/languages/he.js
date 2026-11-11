@@ -32,6 +32,7 @@ export default {
       count: { answered: 'נענו: {n}', comments: 'הערות: {n}', remarks: 'סימונים: {n}' },
     },
     replyMeta: { summary: 'מטא-נתונים של התשובה' },
+    chat: { htmlOnly: 'האיור הזה מופיע רק בדף ה-HTML', multi: 'אפשר לבחור כמה' },
     closeAfter: { closing: 'הלשונית תיסגר בעוד {n} שניות', keep: 'להשאיר פתוחה', closeFailed: 'התגובה הועתקה. אפשר לסגור את הלשונית.' },
     toc: 'תוכן העניינים', flow: 'תרשים זרימה', sequence: 'תרשים רצף', er: 'תרשים ישויות וקשרים', colon: ': ', sep: ', ',
     expand: 'הגדלת התרשים', close: 'סגירה', diagram: 'מציג התרשים',
