@@ -191,6 +191,7 @@ AM=skills/answer-me-with-html/scripts/am.mjs
 node $AM render examples/tcp.en.md                # render and open in the browser
 node $AM render notes.md -o out.html --no-open    # choose the output file, don't open
 node $AM render notes.md --theme shadcn           # pick a theme for this run
+node $AM render notes.md --format md              # print the chat Markdown on stdout, no page
 node $AM patch page.html --panel "Why three messages" < panel.md   # replace one ## panel, overwrite the same file
 node $AM lint notes.md                            # writing check only
 node $AM list                                     # list components
@@ -395,6 +396,7 @@ am serve --tailscale  # listen on your Tailscale address only; open the links fr
 | `theme` | `auto` | Default theme: `auto` (paper for long text, blueprint for diagrams), `blueprint`, `shadcn`, `paper`, or your own theme |
 | `mode` | `auto` | Default color mode: `auto`, `light` or `dark` |
 | `style` | `80` | Writing check: `off`, `80` (warn only) or `strict` (refuse to render) |
+| `format` | `html` | What `am render` makes: `html` (a page) or `md` (the same content as chat Markdown on stdout, no page). `--format` changes it for one run |
 | `scale` | `1` | Text size on the page: 0.8–1.5 in steps of 0.05. 1.2 makes text 20% larger; diagrams and charts grow with it. The toolbar's A− / A+ buttons change it too; the choice is remembered in this browser and wins over this setting, but under `am serve` it lasts for the tab only |
 | `update_check` | `on` | Check GitHub for a new version once a day and mention it. Never updates by itself |
 | `close_after_reply` | `off` | Close the page tab 3 seconds after you copy the reply, with a countdown and a Keep open button. See the note below |

@@ -191,6 +191,7 @@ AM=skills/answer-me-with-html/scripts/am.mjs
 node $AM render examples/tcp.md                  # 渲染并用浏览器打开
 node $AM render notes.md -o out.html --no-open   # 指定输出位置，不自动打开
 node $AM render notes.md --theme shadcn          # 这一次换主题
+node $AM render notes.md --format md             # 把聊天用的 Markdown 输出到 stdout，不生成页面
 node $AM patch page.html --panel "为什么是三次" < panel.md   # 只换一个 ## 面板，覆盖原 HTML
 node $AM lint notes.md                           # 只做写作检查
 node $AM list                                    # 列出所有组件
@@ -395,6 +396,7 @@ am serve --tailscale  # 只监听 Tailscale 地址；tailnet 内的任何设备�
 | `theme` | `auto` | 默认主题：`auto`（长文用 paper，有图表用 blueprint）、`blueprint`、`shadcn`、`paper`，或你自己的主题 |
 | `mode` | `auto` | 默认明暗：`auto`、`light` 或 `dark` |
 | `style` | `80` | 写作检查：`off`、`80`（只提醒）或 `strict`（不达标不生成） |
+| `format` | `html` | `am render` 生成什么：`html`（页面）或 `md`（把同样的内容作为聊天用的 Markdown 输出到 stdout，不生成页面）。`--format` 只改这一次 |
 | `scale` | `1` | 页面文字大小：0.8–1.5，步长 0.05。1.2 表示放大 20%；图表跟着变大。工具栏的 A− / A+ 也能调整；选择会记在这个浏览器里，并优先于这个设置，但在 `am serve` 下只在当前标签页内有效 |
 | `update_check` | `on` | 每天向 GitHub 查一次新版本并提醒你，不会自己更新 |
 | `close_after_reply` | `off` | 复制回复后 3 秒关闭页面标签页，带倒计时和「保持打开」按钮。见下方说明 |
