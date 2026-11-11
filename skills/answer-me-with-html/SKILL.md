@@ -102,6 +102,8 @@ AM_EOF
    If you have a `present` tool (DeepSeek Harness), call it with the absolute path from the `✓` line before you reply, so the user can open the page from a card in the app. Still end the reply with the link.
    If you have an in-app browser tool (such as `open_in_codex` in OpenAI Codex), the render output has a `link:` line, and `am config get open` is not `off`, call that tool with the link (`open_in_codex`: `target: { type: "browser", url: "<link>" }`) so the user sees the page in the app's browser panel. Still end the reply with the link.
 
+When the caller asks for the chat form of a draft (a host or a skill that shows Markdown in place of a page), add `--format md` to `render`: the CLI checks the draft exactly as for a page, writes no page and prints the content as chat Markdown on stdout, with the asks as numbered options and no reply metadata; every note on the draft goes to stderr. Show that Markdown as it is. `-o` and `--replace` do not go with it.
+
 When a page already exists and only one panel needs to change, do not rewrite the whole page. Take the source draft from the HTML's `#am-source`, replace only the matching `##` section, and overwrite the page in place:
 
 ````bash

@@ -1438,6 +1438,7 @@ var zh_default = {
       count: { answered: "\u5DF2\u4F5C\u7B54 {n} \u9879", comments: "\u8BC4\u8BBA {n} \u6761", remarks: "\u6807\u6CE8 {n} \u5904" }
     },
     replyMeta: { summary: "\u56DE\u590D\u5143\u6570\u636E" },
+    chat: { htmlOnly: "\u6B64\u56FE\u53EA\u5728 HTML \u9875\u9762\u4E2D", multi: "\u53EF\u591A\u9009" },
     closeAfter: { closing: "{n} \u79D2\u540E\u5173\u95ED\u6B64\u6807\u7B7E\u9875", keep: "\u4FDD\u6301\u6253\u5F00", closeFailed: "\u56DE\u590D\u5DF2\u590D\u5236\uFF0C\u73B0\u5728\u53EF\u4EE5\u5173\u95ED\u6B64\u6807\u7B7E\u9875\u3002" },
     toc: "\u76EE\u5F55",
     flow: "\u6D41\u7A0B\u56FE",
@@ -1522,6 +1523,7 @@ var zh_Hant_default = {
       count: { answered: "\u5DF2\u4F5C\u7B54 {n} \u9805", comments: "\u8A55\u8AD6 {n} \u5247", remarks: "\u6A19\u8A3B {n} \u8655" }
     },
     replyMeta: { summary: "\u56DE\u8986\u4E2D\u7E7C\u8CC7\u6599" },
+    chat: { htmlOnly: "\u6B64\u5716\u53EA\u5728 HTML \u9801\u9762\u4E2D", multi: "\u53EF\u591A\u9078" },
     closeAfter: { closing: "{n} \u79D2\u5F8C\u95DC\u9589\u6B64\u5206\u9801", keep: "\u4FDD\u6301\u958B\u555F", closeFailed: "\u56DE\u8986\u5DF2\u8907\u88FD\uFF0C\u73FE\u5728\u53EF\u4EE5\u95DC\u9589\u6B64\u5206\u9801\u3002" },
     toc: "\u76EE\u9304",
     flow: "\u6D41\u7A0B\u5716",
@@ -1600,6 +1602,7 @@ var en_default = {
       count: { answered: "Answered: {n}", comments: "Comments: {n}", remarks: "Remarks: {n}" }
     },
     replyMeta: { summary: "Reply metadata" },
+    chat: { htmlOnly: "This figure is in the HTML page only", multi: "pick any" },
     closeAfter: { closing: "Closing this tab in {n}s", keep: "Keep open", closeFailed: "Reply copied. You can close this tab now." },
     toc: "Contents",
     flow: "Flowchart",
@@ -1684,6 +1687,7 @@ var ja_default = {
       count: { answered: "\u56DE\u7B54\u6E08\u307F {n} \u4EF6", comments: "\u30B3\u30E1\u30F3\u30C8 {n} \u4EF6", remarks: "\u6CE8\u8A18 {n} \u4EF6" }
     },
     replyMeta: { summary: "\u8FD4\u4FE1\u30E1\u30BF\u30C7\u30FC\u30BF" },
+    chat: { htmlOnly: "\u3053\u306E\u56F3\u306F HTML \u7248\u306E\u307F", multi: "\u8907\u6570\u9078\u3079\u307E\u3059" },
     closeAfter: { closing: "{n} \u79D2\u5F8C\u306B\u3053\u306E\u30BF\u30D6\u3092\u9589\u3058\u307E\u3059", keep: "\u958B\u3044\u305F\u307E\u307E\u306B\u3059\u308B", closeFailed: "\u8FD4\u4FE1\u3092\u30B3\u30D4\u30FC\u3057\u307E\u3057\u305F\u3002\u3053\u306E\u30BF\u30D6\u3092\u9589\u3058\u3066\u69CB\u3044\u307E\u305B\u3093\u3002" },
     toc: "\u76EE\u6B21",
     flow: "\u30D5\u30ED\u30FC\u30C1\u30E3\u30FC\u30C8",
@@ -1766,6 +1770,7 @@ var he_default = {
       count: { answered: "\u05E0\u05E2\u05E0\u05D5: {n}", comments: "\u05D4\u05E2\u05E8\u05D5\u05EA: {n}", remarks: "\u05E1\u05D9\u05DE\u05D5\u05E0\u05D9\u05DD: {n}" }
     },
     replyMeta: { summary: "\u05DE\u05D8\u05D0-\u05E0\u05EA\u05D5\u05E0\u05D9\u05DD \u05E9\u05DC \u05D4\u05EA\u05E9\u05D5\u05D1\u05D4" },
+    chat: { htmlOnly: "\u05D4\u05D0\u05D9\u05D5\u05E8 \u05D4\u05D6\u05D4 \u05DE\u05D5\u05E4\u05D9\u05E2 \u05E8\u05E7 \u05D1\u05D3\u05E3 \u05D4-HTML", multi: "\u05D0\u05E4\u05E9\u05E8 \u05DC\u05D1\u05D7\u05D5\u05E8 \u05DB\u05DE\u05D4" },
     closeAfter: { closing: "\u05D4\u05DC\u05E9\u05D5\u05E0\u05D9\u05EA \u05EA\u05D9\u05E1\u05D2\u05E8 \u05D1\u05E2\u05D5\u05D3 {n} \u05E9\u05E0\u05D9\u05D5\u05EA", keep: "\u05DC\u05D4\u05E9\u05D0\u05D9\u05E8 \u05E4\u05EA\u05D5\u05D7\u05D4", closeFailed: "\u05D4\u05EA\u05D2\u05D5\u05D1\u05D4 \u05D4\u05D5\u05E2\u05EA\u05E7\u05D4. \u05D0\u05E4\u05E9\u05E8 \u05DC\u05E1\u05D2\u05D5\u05E8 \u05D0\u05EA \u05D4\u05DC\u05E9\u05D5\u05E0\u05D9\u05EA." },
     toc: "\u05EA\u05D5\u05DB\u05DF \u05D4\u05E2\u05E0\u05D9\u05D9\u05E0\u05D9\u05DD",
     flow: "\u05EA\u05E8\u05E9\u05D9\u05DD \u05D6\u05E8\u05D9\u05DE\u05D4",
@@ -10189,6 +10194,57 @@ function checkedTempHome({ create = false } = {}) {
   return dir;
 }
 
+// src/chat-markdown.js
+var RENDER_FORMAT = Object.freeze({ HTML: "html", MD: "md" });
+var FORMATS = Object.freeze(Object.values(RENDER_FORMAT));
+var RAW_LANGS2 = /* @__PURE__ */ new Set(["html", "svg"]);
+var TABLE_ATTR_LINE = /^\s*\{table\s+[^{}]*\}\s*$/;
+var ASK_OPTION = /^([*-])\s+(.+)$/;
+function toChatMarkdown(source, language) {
+  const { doc: doc2 } = parseDocLoose(source);
+  const ui = language.ui;
+  const out = [];
+  if (doc2.meta.title) out.push(`# ${doc2.meta.title}`);
+  if (doc2.meta.subtitle) out.push(String(doc2.meta.subtitle));
+  out.push(...blocksText(doc2.intro, ui));
+  for (const panel of doc2.panels) {
+    out.push(`## ${panel.title}`);
+    out.push(...blocksText(panel.blocks, ui));
+  }
+  return `${out.filter((part) => part.trim()).join("\n\n")}
+`;
+}
+function blocksText(blocks, ui) {
+  return blocks.map((b) => {
+    if (b.type === "md") return mdText(b.text);
+    if (b.lang === "ask") return askText(b.text, b.args, ui);
+    if (RAW_LANGS2.has(b.lang)) return `_(${ui.chat.htmlOnly})_`;
+    return fenced(b);
+  });
+}
+var mdText = (text2) => text2.split("\n").filter((line) => !TABLE_ATTR_LINE.test(line)).join("\n").trim();
+function fenced({ lang, args, text: text2 }) {
+  const longest = Math.max(2, ...(text2.match(/`+/g) ?? []).map((run2) => run2.length));
+  const mark = "`".repeat(longest + 1);
+  const info = [lang, args].filter(Boolean).join(" ");
+  return `${mark}${info}
+${text2}
+${mark}`;
+}
+function askText(text2, args, ui) {
+  const [question, ...rest] = contentLines(text2);
+  const multi = /(^|\s)multi(\s|$)/.test(args);
+  const options = rest.map(({ text: line }, i) => {
+    const m2 = line.match(ASK_OPTION);
+    if (!m2) return `${i + 1}. ${line}`;
+    const [label, note2 = ""] = fields(m2[2]);
+    const tag = m2[1] === "*" ? ` (${ui.reply.suggested})` : "";
+    return `${i + 1}. ${label}${tag}${note2 ? ` \u2014 ${note2}` : ""}`;
+  });
+  const head = `**${question?.text ?? ""}**${multi ? ` (${ui.chat.multi})` : ""}`;
+  return [head, ...options].join("\n");
+}
+
 // src/config.js
 var ConfigError = class extends Error {
   constructor(message) {
@@ -10201,6 +10257,7 @@ var CONFIG_KEYS = Object.freeze({
   theme: { type: "enum", choices: CHOICES.theme, default: AUTO, label: "Default theme (auto: paper for long text, blueprint for diagrams)" },
   mode: { type: "enum", choices: CHOICES.mode, default: "auto", label: "Default light/dark mode" },
   style: { type: "enum", choices: CHOICES.style, default: "80", label: "STE writing-check strictness" },
+  format: { type: "enum", choices: FORMATS, default: RENDER_FORMAT.HTML, label: "What am render makes (html: a page; md: the same content as chat Markdown on stdout, no page)" },
   scale: { type: "number", min: SCALE.min, max: SCALE.max, step: SCALE.step, default: 1, label: "Text size on the page (1 = default, 1.2 = 20% larger; diagrams and charts grow with it)" },
   update_check: { type: "bool", default: true, label: "Check for a new version once a day in the background and tell you (never updates by itself)" },
   close_after_reply: { type: "bool", default: false, label: "Close the page tab 3 seconds after the reply is copied (a Keep open button cancels it)" },
@@ -12887,7 +12944,7 @@ var USAGE = `Answer me with HTML ${VERSION} \u2014 renders a Markdown draft into
 
 Usage:
   am render <file|->  [-o <file>] [--replace <page>] [--no-open] [--theme ${["auto", ...themeNames("page")].join("|")}]
-                      [--template sheet|doc] [--style off|80|strict] [--mode auto|light|dark]
+                      [--template sheet|doc] [--style off|80|strict] [--mode auto|light|dark] [--format html|md]
   am patch  <html> --panel <title> [file|-] [--from file] [--theme \u2026] [--no-open]
                                                   replace one ## panel of an existing page and overwrite that HTML in place
   am video  <file|->  [-o <file>] [--voice auto|elevenlabs|local|system|off | --audio-map <file.json>]
@@ -12908,6 +12965,7 @@ Usage:
 - A file argument of - reads from stdin (good for heredoc: am render - <<'EOF' ... EOF).
 - -o names an output file, for example -o page.html; it does not name a folder.
 - Output goes to ~/.answer-me-with-html/pages/ by default (change it with the AM_HOME environment variable).
+- --format md writes no page: it prints the same content as chat Markdown on stdout (asks become numbered options, no reply metadata) and the draft notes on stderr. am config set format md makes it the default.
 - A page with STE or code warnings does not open. Fix the draft and render again with --replace <page>: the earlier page is deleted once the new one is written.
 - Set auto-open, the default theme and more with am config; --open / --no-open apply to this run only.
 - am patch reads the source draft from the page's hidden #am-source, changes only the ## section that --panel names, and writes the page back to the same path.`;
@@ -13075,6 +13133,7 @@ async function main(argv, io = {}) {
         open: { type: "boolean" },
         theme: { type: "string" },
         template: { type: "string" },
+        format: { type: "string" },
         style: { type: "string" },
         mode: { type: "string" },
         voice: { type: "string" },
@@ -13180,13 +13239,22 @@ function shouldOpen(opts, env, config) {
 }
 async function cmdRender(src, opts, ctx, baseDir, from) {
   const { fail, print } = ctx;
+  const config = loadConfig(ctx);
+  const { theme, mode, style } = config.values;
+  const format = opts.format ?? config.values.format;
+  if (!FORMATS.includes(format)) {
+    fail(`\u2717 Invalid format value "${format}". Choose one of: ${FORMATS.join(" | ")}`);
+    return 2;
+  }
+  if (format === RENDER_FORMAT.MD && (opts.out !== void 0 || opts.replace !== void 0)) {
+    fail("\u2717 --format md writes no page, so it takes no -o or --replace");
+    return 2;
+  }
   const replaced = opts.replace === void 0 ? null : pagePath(opts.replace, ctx);
   if (replaced === false) {
     fail(`\u2717 --replace takes a page that am render wrote (a .html file in ${join13(amHome(ctx.env), "pages")} or ${join13(tempHome(), "pages")})`);
     return 2;
   }
-  const config = loadConfig(ctx);
-  const { theme, mode, style } = config.values;
   await loadMath(src);
   let result;
   try {
@@ -13194,6 +13262,7 @@ async function cmdRender(src, opts, ctx, baseDir, from) {
   } catch (e) {
     return reportDraftError(e, src, from, ctx);
   }
+  if (format === RENDER_FORMAT.MD) return printChat(result, src, from, ctx);
   const file = outputPath("pages", nameSource(result.meta), opts, ctx);
   if (!file) return 2;
   const written = emit(result, file, ctx, { fallback: opts.out ? void 0 : "pages" });
@@ -13204,6 +13273,13 @@ async function cmdRender(src, opts, ctx, baseDir, from) {
   const held = !opts.open && hasRetryWarnings(result) && shouldOpen(opts, ctx.env, config.values);
   if (held) print(`  Not opened because of the warnings; to render again, add --replace ${written}`);
   return finish(written, held ? { ...opts, "no-open": true } : opts, config, ctx);
+}
+function printChat(result, src, from, ctx) {
+  const notes = { ...ctx, print: ctx.fail };
+  printDraftNotes(result, notes.print);
+  keepDraft(result, src, from, notes);
+  ctx.print(toChatMarkdown(src, result.language).trimEnd());
+  return 0;
 }
 var updateFor = (config, { env, io }) => pageUpdate(readState(amHome(env)), VERSION, io.scriptPath, env, config.values);
 var hasWarnings = (result) => hasRetryWarnings(result) || (result.stats.componentWarnings ?? []).length > 0 || (result.stats.htmlWarnings ?? []).length > 0;
@@ -13649,6 +13725,10 @@ function emit(result, file, ctx, { note: note2 = "", fallback, inPlace } = {}) {
   if (link) print(`  link: ${link}`);
   print(`  ${summaryLine(result)}${note2}`);
   if (result.stats.code?.length) print(`  code embedded from: ${result.stats.code.join(", ")}`);
+  printDraftNotes(result, print);
+  return saved.file;
+}
+function printDraftNotes(result, print) {
   const long = result.stats.codeWarnings ?? [];
   if (long.length) {
     print(`  code ${count(long.length, "warning")} (trim the block and run again, or keep it if every line matters):`);
@@ -13658,7 +13738,6 @@ function emit(result, file, ctx, { note: note2 = "", fallback, inPlace } = {}) {
   printHtmlWarnings(result.stats.htmlWarnings, print);
   printMathWarnings(result.stats.mathWarnings, print);
   printWarnings(result.warnings, print, result.meta.style);
-  return saved.file;
 }
 function printComponentWarnings(notes = [], print) {
   if (!notes.length) return;
