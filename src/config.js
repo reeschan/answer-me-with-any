@@ -7,6 +7,7 @@ import { defaultHome, ensureHome } from './home.js';
 import { CHOICES, VOICES } from './parse.js';
 import { loadThemes, AUTO } from './themes/registry.js';
 import { SCALE } from './themes/type-scale.js';
+import { RENDER_FORMAT, FORMATS } from './chat-markdown.js';
 
 export class ConfigError extends Error {
   constructor(message) {
@@ -20,6 +21,7 @@ export const CONFIG_KEYS = Object.freeze({
   theme: { type: 'enum', choices: CHOICES.theme, default: AUTO, label: 'Default theme (auto: paper for long text, blueprint for diagrams)' },
   mode: { type: 'enum', choices: CHOICES.mode, default: 'auto', label: 'Default light/dark mode' },
   style: { type: 'enum', choices: CHOICES.style, default: '80', label: 'STE writing-check strictness' },
+  format: { type: 'enum', choices: FORMATS, default: RENDER_FORMAT.HTML, label: 'What am render makes (html: a page; md: the same content as chat Markdown on stdout, no page)' },
   scale: { type: 'number', min: SCALE.min, max: SCALE.max, step: SCALE.step, default: 1, label: 'Text size on the page (1 = default, 1.2 = 20% larger; diagrams and charts grow with it)' },
   update_check: { type: 'bool', default: true, label: 'Check for a new version once a day in the background and tell you (never updates by itself)' },
   close_after_reply: { type: 'bool', default: false, label: 'Close the page tab 3 seconds after the reply is copied (a Keep open button cancels it)' },
