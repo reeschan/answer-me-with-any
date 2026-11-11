@@ -10200,8 +10200,8 @@ var FORMATS = Object.freeze(Object.values(RENDER_FORMAT));
 var RAW_LANGS2 = /* @__PURE__ */ new Set(["html", "svg"]);
 var TABLE_ATTR_LINE = /^\s*\{table\s+[^{}]*\}\s*$/;
 var ASK_OPTION = /^([*-])\s+(.+)$/;
-function toChatMarkdown(source, language) {
-  const { doc: doc2 } = parseDocLoose(source);
+function toChatMarkdown(source, language, { choices = {} } = {}) {
+  const { doc: doc2 } = parseDocLoose(source, { choices });
   const ui = language.ui;
   const out = [];
   if (doc2.meta.title) out.push(`# ${doc2.meta.title}`);
@@ -13278,7 +13278,7 @@ function printChat(result, src, from, ctx) {
   const notes = { ...ctx, print: ctx.fail };
   printDraftNotes(result, notes.print);
   keepDraft(result, src, from, notes);
-  ctx.print(toChatMarkdown(src, result.language).trimEnd());
+  ctx.print(toChatMarkdown(src, result.language, { choices: { theme: ctx.themes.choices("page") } }).trimEnd());
   return 0;
 }
 var updateFor = (config, { env, io }) => pageUpdate(readState(amHome(env)), VERSION, io.scriptPath, env, config.values);

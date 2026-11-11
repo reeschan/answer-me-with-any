@@ -14,9 +14,10 @@ const TABLE_ATTR_LINE = /^\s*\{table\s+[^{}]*\}\s*$/;
 const ASK_OPTION = /^([*-])\s+(.+)$/;
 
 // source: the draft; language: the resolved language of the draft (its ui labels name the suggested option and the
-// placeholder of a raw block). The draft is assumed to have rendered already, so a block that does not parse is kept as it is.
-export function toChatMarkdown(source, language) {
-  const { doc } = parseDocLoose(source);
+// placeholder of a raw block); choices: the allowed front matter values the render used (the user's themes among them).
+// The draft is assumed to have rendered already, so a block that does not parse is kept as it is.
+export function toChatMarkdown(source, language, { choices = {} } = {}) {
+  const { doc } = parseDocLoose(source, { choices });
   const ui = language.ui;
   const out = [];
   if (doc.meta.title) out.push(`# ${doc.meta.title}`);

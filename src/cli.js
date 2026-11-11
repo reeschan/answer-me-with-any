@@ -381,7 +381,7 @@ function printChat(result, src, from, ctx) {
   const notes = { ...ctx, print: ctx.fail };
   printDraftNotes(result, notes.print);
   keepDraft(result, src, from, notes);
-  ctx.print(toChatMarkdown(src, result.language).trimEnd());
+  ctx.print(toChatMarkdown(src, result.language, { choices: { theme: ctx.themes.choices('page') } }).trimEnd());
   return 0;
 }
 

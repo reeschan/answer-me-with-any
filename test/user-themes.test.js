@@ -218,3 +218,10 @@ test('am theme check: every built-in page theme passes', async () => {
     assert.equal(r.code, 0, `${name}: ${r.out}${r.err}`);
   }
 });
+
+test('user theme: a draft that names a user theme also renders with --format md', async () => {
+  install('notes', notesTheme());
+  const r = await run(['render', '-', '--format', 'md'], `---\ntitle: Notes\ntheme: notes\n---\n${DRAFT}`);
+  assert.equal(r.code, 0, r.err);
+  assert.match(r.out, /^# Notes\n\n## 流程\n/);
+});
