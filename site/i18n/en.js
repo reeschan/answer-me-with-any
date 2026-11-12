@@ -383,7 +383,7 @@ export default {
   i_dsh_note: 'Use the profile you run in; <code>web</code> is the shipped one. The skill is available in the next session.',
   i_npx_d: 'It asks which agents to install into. The installer, <a href="https://github.com/vercel-labs/skills">vercel-labs/skills</a>, supports more than 70 agents.',
   i_manual: 'Manual',
-  i_manual_d: 'Copy the <code>skills/answer-me-with-html</code> folder into your agent’s skill folder. For Claude Code:',
+  i_manual_d: 'Copy the <code>skills/answer-me-with-any</code> folder into your agent’s skill folder. For Claude Code:',
   i_manual_note: 'Other agents: Codex <code>~/.codex/skills/</code>, Cursor <code>~/.cursor/skills/</code>, OpenCode <code>~/.config/opencode/skill/</code>.',
   i_always_k: 'Recommended',
   i_always_t: 'Always-on mode',

@@ -372,7 +372,7 @@ am serve --tailscale  # listen on your Tailscale address only; open the links fr
 
 ## Updating and cleaning up
 
-**Updating.** Updates are manual, and the tool tells you when one is out. Once a day, a background process downloads this project's `package.json` and `highlights.json` from GitHub to read the latest version number and its highlights. Nothing about you or your pages is sent, and the page you asked for never waits on it. When there is a newer version, the next render adds a one-line notice and the agent asks whether you want to update. Each page made while you are out of date also has a "New version" button at the start of the toolbar; click it for up to three highlights of the new version in the page language, the update command and a copy button. `am serve` takes the button out of a page it sends to another device (`--lan` or `--public-url`), and the page itself never goes online. Turn this off with `/answer-me-with-html:config update_check off`.
+**Updating.** Updates are manual, and the tool tells you when one is out. Once a day, a background process downloads this project's `package.json` and `highlights.json` from GitHub to read the latest version number and its highlights. Nothing about you or your pages is sent, and the page you asked for never waits on it. When there is a newer version, the next render adds a one-line notice and the agent asks whether you want to update. Each page made while you are out of date also has a "New version" button at the start of the toolbar; click it for up to three highlights of the new version in the page language, the update command and a copy button. `am serve` takes the button out of a page it sends to another device (`--lan` or `--public-url`), and the page itself never goes online. Turn this off with `/answer-me-with-any:config update_check off`.
 
 | Installed with | Update with |
 | :--- | :--- |
@@ -380,6 +380,7 @@ am serve --tailscale  # listen on your Tailscale address only; open the links fr
 | `git clone` + `npm link` | `git pull && npm install` in the repository |
 | DeepSeek Harness plugin | `dsh plugin --profile <profile> up <package>`; the update notice fills in the profile and the package |
 | Claude Code plugin | In a terminal run `claude plugin update answer-me-with-any@answer-me-with-any` (or open `/plugin` → Installed → Update now), then `/reload-plugins`. To update automatically, turn on auto-update for this marketplace in `/plugin` → Marketplaces. Claude Code leaves it off for third-party marketplaces |
+| Under the old name `answer-me-with-html` (before 0.5.12) | The old name does not update to the new one. Remove the old install first: `claude plugin uninstall answer-me-with-html@answer-me-with-html` for the plugin, or delete `~/.agents/skills/answer-me-with-html` or `~/.claude/skills/answer-me-with-html` for a skill. Then install `answer-me-with-any` as in the first install |
 
 **Cleaning up.** Pages, videos and the narration cache build up in `~/.answer-me-with-html/`. If that folder grows past 200 MB, or passes 20 MB with no cleanup for 30 days, the agent asks once a week whether to clean it. Nothing is deleted without your OK.
 

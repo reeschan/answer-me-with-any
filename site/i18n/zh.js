@@ -405,7 +405,7 @@ export default {
   i_dsh_note: '换成你在用的 profile，自带的是 <code>web</code>。下一个会话就能用。',
   i_npx_d: '它会问你装到哪个 Agent。安装器来自 <a href="https://github.com/vercel-labs/skills">vercel-labs/skills</a>，支持 70 多种 Agent。',
   i_manual: '手动安装',
-  i_manual_d: '把 <code>skills/answer-me-with-html</code> 目录放进你的 Agent 的 skill 目录。以 Claude Code 为例：',
+  i_manual_d: '把 <code>skills/answer-me-with-any</code> 目录放进你的 Agent 的 skill 目录。以 Claude Code 为例：',
   i_manual_note: '其他 Agent 的 skill 目录：Codex 是 <code>~/.codex/skills/</code>，Cursor 是 <code>~/.cursor/skills/</code>，OpenCode 是 <code>~/.config/opencode/skill/</code>。',
   i_always_k: '推荐',
   i_always_t: '高频模式',

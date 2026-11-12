@@ -46,7 +46,7 @@ Automatic pages are for replies to the user. An internal report returned to anot
 
 ### Always-on mode
 
-If the context contains the `[answer-me-with-any always-on]` reminder (the user added the always-on rule to a rules file such as `CLAUDE.md` or `AGENTS.md`), the bar is lower:
+If the context contains the `[answer-me-with-any always-on]` reminder, or the `[answer-me-with-html always-on]` one written before the rename (the user added the always-on rule to a rules file such as `CLAUDE.md` or `AGENTS.md`), the bar is lower:
 
 - Whenever this turn gives a conclusion, summary, plan, comparison, review or explanation, attach a page.
 - Do not skip it because "the answer is short". If there is a conclusion, produce a page.

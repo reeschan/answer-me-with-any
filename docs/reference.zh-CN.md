@@ -372,7 +372,7 @@ am serve --tailscale  # 只监听 Tailscale 地址；tailnet 内的任何设备�
 
 ## 更新与清理
 
-**更新**：需要手动更新，但有新版本时会提醒你。工具每天在后台向 GitHub 查询一次最新版本号和这个版本的亮点，不上传任何内容，也不会拖慢你要的页面。有新版本时，下一次出页面会附一行提示，Agent 会问你要不要更新。过时期间生成的每个页面，工具栏最前面还会多一个「新版本」按钮，点开能看到新版本最多 3 条亮点（跟页面同一种语言）、更新命令和复制按钮。用 `am serve --lan` 或 `--public-url` 分享给别的设备时，`am serve` 会把按钮去掉；页面本身也不联网。关掉提醒：`/answer-me-with-html:config update_check off`。
+**更新**：需要手动更新，但有新版本时会提醒你。工具每天在后台向 GitHub 查询一次最新版本号和这个版本的亮点，不上传任何内容，也不会拖慢你要的页面。有新版本时，下一次出页面会附一行提示，Agent 会问你要不要更新。过时期间生成的每个页面，工具栏最前面还会多一个「新版本」按钮，点开能看到新版本最多 3 条亮点（跟页面同一种语言）、更新命令和复制按钮。用 `am serve --lan` 或 `--public-url` 分享给别的设备时，`am serve` 会把按钮去掉；页面本身也不联网。关掉提醒：`/answer-me-with-any:config update_check off`。
 
 | 安装方式 | 更新方法 |
 | :--- | :--- |
@@ -380,6 +380,7 @@ am serve --tailscale  # 只监听 Tailscale 地址；tailnet 内的任何设备�
 | `git clone` + `npm link` | 在仓库目录运行 `git pull && npm install` |
 | DeepSeek Harness 插件 | `dsh plugin --profile <profile> up <package>`；更新提示会自动填好 profile 和包名 |
 | Claude Code 插件 | 终端运行 `claude plugin update answer-me-with-any@answer-me-with-any`（或在 `/plugin` → Installed 里点 Update now），再 `/reload-plugins`。想自动更新，就在 `/plugin` → Marketplaces 里给这个插件市场打开自动更新。第三方插件市场默认不自动更新 |
+| 旧名称 `answer-me-with-html`（0.5.12 之前） | 旧名称不会更新成新名称。先删除旧的安装：插件运行 `claude plugin uninstall answer-me-with-html@answer-me-with-html`，skill 则删除 `~/.agents/skills/answer-me-with-html` 或 `~/.claude/skills/answer-me-with-html`。然后按首次安装的方法安装 `answer-me-with-any` |
 
 **清理**：页面、视频和配音缓存都存在 `~/.answer-me-with-html/`。目录超过 200 MB，或超过 20 MB 且 30 天没清理过，Agent 会问你要不要清理，每周最多问一次。没有你的同意，什么都不会删。
 

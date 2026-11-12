@@ -47,12 +47,13 @@ If it is older or missing, show me the exact command for my system below and ask
 ## Step 2: Check for an existing install
 
 ```bash
-ls -d ~/.agents/skills/answer-me-with-any ~/.claude/skills/answer-me-with-any 2>/dev/null; claude plugin list 2>/dev/null | grep answer-me-with-any
+ls -d ~/.agents/skills/answer-me-with-any ~/.claude/skills/answer-me-with-any ~/.agents/skills/answer-me-with-html ~/.claude/skills/answer-me-with-html 2>/dev/null; claude plugin list 2>/dev/null | grep -E 'answer-me-with-(any|html)'
 ```
 
 Decide without asking:
 
 - Nothing found: go to Step 3.
+- Found only under the old name `answer-me-with-html`: it does not update to the new name. Remove it (`claude plugin uninstall answer-me-with-html@answer-me-with-html` for the plugin; delete the `answer-me-with-html` folder for a skill), go to Step 3, and say in the report that the old install was replaced.
 - Found, and it is the way Step 3 would install for you: update it, then go to Step 4. Use `npx -y skills update answer-me-with-any -y` for a skill, or `claude plugin update answer-me-with-any@answer-me-with-any` for the plugin.
 - Found, but a different way (for example a skill, while you are in Claude Code): keep it, skip Step 3, and go to Step 4. In the report, say which way is installed and what the other way would add.
 
