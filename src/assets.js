@@ -1,5 +1,5 @@
 // Static assets needed at run time, in one place. In development they are read from disk; when bundling (scripts/build.mjs) the whole module is replaced by inline strings,
-// so the bundle skills/answer-me-with-html/scripts/am.mjs depends on no external files.
+// so the bundle skills/answer-me-with-any/scripts/am.mjs depends on no external files.
 import { readFileSync } from 'node:fs';
 import { composeRuntime, unexport } from './runtime/compose.js';
 import { composeMathCss } from './themes/math-css.js';

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const SKILL = readFileSync(fileURLToPath(new URL('../skills/answer-me-with-html/SKILL.md', import.meta.url)), 'utf8');
+const SKILL = readFileSync(fileURLToPath(new URL('../skills/answer-me-with-any/SKILL.md', import.meta.url)), 'utf8');
 const line = (start) => SKILL.split('\n').find((l) => l.startsWith(start)) ?? '';
 
 // A choice tool (AskUserQuestion) blocks the turn. If the page link only comes in the

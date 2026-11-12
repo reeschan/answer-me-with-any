@@ -9,8 +9,8 @@ export const UPDATE = Object.freeze({
   checkEveryDays: 1,
   hintEveryDays: 3,
   timeoutMs: 5000,
-  url: 'https://raw.githubusercontent.com/QingYunA/answer-me-with-html/main/package.json',
-  highlightsUrl: 'https://raw.githubusercontent.com/QingYunA/answer-me-with-html/main/highlights.json',
+  url: 'https://raw.githubusercontent.com/reeschan/answer-me-with-any/main/package.json',
+  highlightsUrl: 'https://raw.githubusercontent.com/reeschan/answer-me-with-any/main/highlights.json',
 });
 
 // highlights.json: { "version": "x.y.z", "<language id>": ["line", ...], ... }, written in the release PR (CONTRIBUTING.md).
@@ -37,9 +37,9 @@ export { parseVersion, newer };
 // The update command for each install method, as the user types it. dsh needs the
 // profile and the package name, so it is filled in by dshUpdateCommand.
 export const UPDATE_COMMANDS = Object.freeze({
-  plugin: 'claude plugin update answer-me-with-html@answer-me-with-html',
+  plugin: 'claude plugin update answer-me-with-any@answer-me-with-any',
   repo: 'git pull && npm install',
-  skills: 'npx skills update answer-me-with-html -y',
+  skills: 'npx skills update answer-me-with-any -y',
   dsh: 'dsh plugin --profile <profile> up <package>',
 });
 
@@ -70,7 +70,7 @@ export function updateCommand(scriptPath = '') {
   if (method === 'plugin') {
     return `run ${UPDATE_COMMANDS.plugin} in a terminal (or click Update now on the Installed tab of /plugin), then /reload-plugins`;
   }
-  if (method === 'repo') return `run ${UPDATE_COMMANDS.repo} in the answer-me-with-html repository`;
+  if (method === 'repo') return `run ${UPDATE_COMMANDS.repo} in the answer-me-with-any repository`;
   if (method === 'dsh') return `run ${dshUpdateCommand(scriptPath)}`;
   return `run ${UPDATE_COMMANDS.skills}`;
 }

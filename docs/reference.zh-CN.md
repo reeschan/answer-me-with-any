@@ -186,7 +186,7 @@ Postgres    | 28  | 95
 CLI 就是 skill 目录里的 `scripts/am.mjs`：
 
 ````bash
-AM=skills/answer-me-with-html/scripts/am.mjs
+AM=skills/answer-me-with-any/scripts/am.mjs
 
 node $AM render examples/tcp.md                  # 渲染并用浏览器打开
 node $AM render notes.md -o out.html --no-open   # 指定输出位置，不自动打开
@@ -372,18 +372,19 @@ am serve --tailscale  # 只监听 Tailscale 地址；tailnet 内的任何设备�
 
 ## 更新与清理
 
-**更新**：需要手动更新，但有新版本时会提醒你。工具每天在后台向 GitHub 查询一次最新版本号和这个版本的亮点，不上传任何内容，也不会拖慢你要的页面。有新版本时，下一次出页面会附一行提示，Agent 会问你要不要更新。过时期间生成的每个页面，工具栏最前面还会多一个「新版本」按钮，点开能看到新版本最多 3 条亮点（跟页面同一种语言）、更新命令和复制按钮。用 `am serve --lan` 或 `--public-url` 分享给别的设备时，`am serve` 会把按钮去掉；页面本身也不联网。关掉提醒：`/answer-me-with-html:config update_check off`。
+**更新**：需要手动更新，但有新版本时会提醒你。工具每天在后台向 GitHub 查询一次最新版本号和这个版本的亮点，不上传任何内容，也不会拖慢你要的页面。有新版本时，下一次出页面会附一行提示，Agent 会问你要不要更新。过时期间生成的每个页面，工具栏最前面还会多一个「新版本」按钮，点开能看到新版本最多 3 条亮点（跟页面同一种语言）、更新命令和复制按钮。用 `am serve --lan` 或 `--public-url` 分享给别的设备时，`am serve` 会把按钮去掉；页面本身也不联网。关掉提醒：`/answer-me-with-any:config update_check off`。
 
 | 安装方式 | 更新方法 |
 | :--- | :--- |
-| `npx skills add` | `npx skills update answer-me-with-html -y`，或直接对 Agent 说"更新一下 answer-me-with-html" |
+| `npx skills add` | `npx skills update answer-me-with-any -y`，或直接对 Agent 说"更新一下 answer-me-with-any" |
 | `git clone` + `npm link` | 在仓库目录运行 `git pull && npm install` |
 | DeepSeek Harness 插件 | `dsh plugin --profile <profile> up <package>`；更新提示会自动填好 profile 和包名 |
-| Claude Code 插件 | 终端运行 `claude plugin update answer-me-with-html@answer-me-with-html`（或在 `/plugin` → Installed 里点 Update now），再 `/reload-plugins`。想自动更新，就在 `/plugin` → Marketplaces 里给这个插件市场打开自动更新。第三方插件市场默认不自动更新 |
+| Claude Code 插件 | 终端运行 `claude plugin update answer-me-with-any@answer-me-with-any`（或在 `/plugin` → Installed 里点 Update now），再 `/reload-plugins`。想自动更新，就在 `/plugin` → Marketplaces 里给这个插件市场打开自动更新。第三方插件市场默认不自动更新 |
+| 旧名称 `answer-me-with-html`（0.5.12 之前） | 旧名称不会更新成新名称。先删除旧的安装：插件运行 `claude plugin uninstall answer-me-with-html@answer-me-with-html`，skill 则删除 `~/.agents/skills/answer-me-with-html` 或 `~/.claude/skills/answer-me-with-html`。然后按首次安装的方法安装 `answer-me-with-any` |
 
 **清理**：页面、视频和配音缓存都存在 `~/.answer-me-with-html/`。目录超过 200 MB，或超过 20 MB 且 30 天没清理过，Agent 会问你要不要清理，每周最多问一次。没有你的同意，什么都不会删。
 
-- `/answer-me-with-html:clean`（插件），或者直接说"清理一下页面"：先预演，再问你。
+- `/answer-me-with-any:clean`（插件），或者直接说"清理一下页面"：先预演，再问你。
 - `am clean`：删除 30 天前的页面、视频和存下的草稿，清空配音缓存。`--days N` 改天数，`--all` 删除全部页面、视频和草稿，`--dry-run` 只看不删。配置和主题始终保留。如果 `pages`、`videos` 或 `cache` 本身是软链接，会被跳过：`am clean` 不会碰链接指向的文件，用量统计和清理提示也不再计入。如果这些目录无法遍历（比如没有读权限），同样会被跳过：其中的文件不计入用量统计和清理提示，显示的大小可能低于实际占用，清理也不会删除它们。
 
 **旧的高频模式插件。** 仓库里已经删掉它，但你本机的副本会一直注入提醒，直到你卸载。先执行 `/plugin uninstall answer-me-with-html-always@answer-me-with-html`，再按 [README](../README.zh-CN.md#高频模式推荐) 加上高频模式的规则。
@@ -413,11 +414,11 @@ am serve --tailscale  # 只监听 Tailscale 地址；tailnet 内的任何设备�
 
 **只在你用话要求时出。** 把这条规则加到你的规则文件里，例如 `~/.claude/CLAUDE.md` 或 `AGENTS.md`：
 
-> 除非我要求生成页面、图示或可视化讲解，或者说我没看懂，否则不要使用 answer-me-with-html skill。
+> 除非我要求生成页面、图示或可视化讲解，或者说我没看懂，否则不要使用 answer-me-with-any skill。
 
 这条规则在更新后还在。agent 仍然看得到这个 skill，所以靠自己的判断遵守规则。
 
-**只用斜杠命令触发（Claude Code）。** 在已安装的 `SKILL.md` 的 frontmatter 里加一行 `disable-model-invocation: true`，例如 `~/.claude/skills/answer-me-with-html/SKILL.md`。之后 agent 完全看不到这个 skill，只有你输入 `/answer-me-with-html` 才会出页面。更新会替换这个文件，更新后要重新加这一行。见 [Claude Code skills 文档](https://code.claude.com/docs/en/skills)。
+**只用斜杠命令触发（Claude Code）。** 在已安装的 `SKILL.md` 的 frontmatter 里加一行 `disable-model-invocation: true`，例如 `~/.claude/skills/answer-me-with-any/SKILL.md`。之后 agent 完全看不到这个 skill，只有你输入 `/answer-me-with-any` 才会出页面。更新会替换这个文件，更新后要重新加这一行。见 [Claude Code skills 文档](https://code.claude.com/docs/en/skills)。
 
 ## 写作检查
 
@@ -430,4 +431,4 @@ Answer me with HTML 把其中容易用机器检查的部分做成了中英双语
 - **日文:** 含假名的稿件按日文处理：页面按钮用日文，页面带 `lang="ja"`。只检查句长和段长，字数上限同中文。要强制指定，在稿件里写 `lang: ja`。
 - **其他语言:** 其他语言只检查长度：句子按词数计（中日文按字数计），段落按句数计。英文和中文的词表、被动语态规则都不会作用在它身上。
 
-用 `/answer-me-with-html:config style strict` 调整严格程度，或者在单篇稿件里写 `style:`。
+用 `/answer-me-with-any:config style strict` 调整严格程度，或者在单篇稿件里写 `style:`。

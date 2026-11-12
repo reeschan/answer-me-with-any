@@ -27,7 +27,7 @@ Server -> Client: SYN-ACK
 > 先是客户端开口，发一个 SYN，意思是"我想跟你建个连接"。
 > [Server] 听到了，回一个 SYN-ACK："收到，我这边也没问题。"`;
 
-const ALWAYS_RULE = '帮我打开 Answer me with HTML 的高频模式：在你的全局规则文件里加一条规则——"[answer-me-with-html always-on] 只要回复里给出了结论、总结、方案、对比、评审或讲解，就同时用 answer-me-with-html skill 生成一页 HTML（日常结论用 2～4 个面板），先渲染页面，再写文字回复，回复最后按 SKILL.md 对当前宿主的要求附上页面链接，不要先写文字再渲染。哪怕回答很短也要出，不要因为答案不长就跳过。渲染时加 --no-open，不要弹出浏览器。闲聊、没有结论的一两句话、纯命令输出、我要求纯文本时除外。另外，子 Agent 向父 Agent 汇报属于内部材料，不是给用户的回复：按父 Agent 的要求返回完整结论与证据，除了任务明确要求出页面，否则不要生成页面。"';
+const ALWAYS_RULE = '帮我打开 Answer me with HTML 的高频模式：在你的全局规则文件里加一条规则——"[answer-me-with-any always-on] 只要回复里给出了结论、总结、方案、对比、评审或讲解，就同时用 answer-me-with-any skill 生成一页 HTML（日常结论用 2～4 个面板），先渲染页面，再写文字回复，回复最后按 SKILL.md 对当前宿主的要求附上页面链接，不要先写文字再渲染。哪怕回答很短也要出，不要因为答案不长就跳过。渲染时加 --no-open，不要弹出浏览器。闲聊、没有结论的一两句话、纯命令输出、我要求纯文本时除外。另外，子 Agent 向父 Agent 汇报属于内部材料，不是给用户的回复：按父 Agent 的要求返回完整结论与证据，除了任务明确要求出页面，否则不要生成页面。"';
 
 // 脚本运行时读取的文字（{n}、{ms} 等由脚本填入）。
 const ui = {
@@ -405,7 +405,7 @@ export default {
   i_dsh_note: '换成你在用的 profile，自带的是 <code>web</code>。下一个会话就能用。',
   i_npx_d: '它会问你装到哪个 Agent。安装器来自 <a href="https://github.com/vercel-labs/skills">vercel-labs/skills</a>，支持 70 多种 Agent。',
   i_manual: '手动安装',
-  i_manual_d: '把 <code>skills/answer-me-with-html</code> 目录放进你的 Agent 的 skill 目录。以 Claude Code 为例：',
+  i_manual_d: '把 <code>skills/answer-me-with-any</code> 目录放进你的 Agent 的 skill 目录。以 Claude Code 为例：',
   i_manual_note: '其他 Agent 的 skill 目录：Codex 是 <code>~/.codex/skills/</code>，Cursor 是 <code>~/.cursor/skills/</code>，OpenCode 是 <code>~/.config/opencode/skill/</code>。',
   i_always_k: '推荐',
   i_always_t: '高频模式',

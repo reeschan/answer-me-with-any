@@ -12,7 +12,7 @@ reviews:
     drafts: false
   path_filters:
     # The bundle is rebuilt from src/ by npm run build.
-    - "!skills/answer-me-with-html/scripts/am.mjs"
+    - "!skills/answer-me-with-any/scripts/am.mjs"
     - "!package-lock.json"
     - "!**/*.png"
   path_instructions:
@@ -35,7 +35,7 @@ reviews:
       instructions: |
         Never add a required color token without a default, and never
         remove or rename a class listed in src/themes/selectors.js.
-    - path: "skills/answer-me-with-html/SKILL.md"
+    - path: "skills/answer-me-with-any/SKILL.md"
       instructions: |
         Every agent reads this file on every page. Flag instructions
         that contradict another step, or that make the agent start

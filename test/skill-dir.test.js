@@ -4,7 +4,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
-const SKILL = 'skills/answer-me-with-html';
+const SKILL = 'skills/answer-me-with-any';
 const read = (p) => readFileSync(`${ROOT}/${p}`, 'utf8');
 const skillFiles = () => [
   `${SKILL}/SKILL.md`,

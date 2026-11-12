@@ -27,7 +27,7 @@ Server -> Client: SYN-ACK
 > The client sends a SYN to ask for a connection.
 > The [Server] answers with a SYN-ACK.`;
 
-const ALWAYS_RULE = 'Turn on always-on mode for Answer me with HTML: add a global rule — "[answer-me-with-html always-on] Whenever a reply gives a conclusion, summary, plan, comparison, review or explanation, even a short one, also make a page with the answer-me-with-html skill (2 to 4 panels for routine answers), render it with --no-open before you write the reply, and end the reply with the page link in the format SKILL.md specifies for your host. Skip casual chat, one- or two-sentence replies with no conclusion, pure command output, and requests for plain text. An internal report to another agent is not a user reply: return the findings and evidence the parent asked for, and make no page unless the task explicitly asks for one."';
+const ALWAYS_RULE = 'Turn on always-on mode for Answer me with HTML: add a global rule — "[answer-me-with-any always-on] Whenever a reply gives a conclusion, summary, plan, comparison, review or explanation, even a short one, also make a page with the answer-me-with-any skill (2 to 4 panels for routine answers), render it with --no-open before you write the reply, and end the reply with the page link in the format SKILL.md specifies for your host. Skip casual chat, one- or two-sentence replies with no conclusion, pure command output, and requests for plain text. An internal report to another agent is not a user reply: return the findings and evidence the parent asked for, and make no page unless the task explicitly asks for one."';
 
 // Strings the scripts read at run time ({n}, {ms} … are filled in by the script).
 const ui = {
@@ -383,7 +383,7 @@ export default {
   i_dsh_note: 'Use the profile you run in; <code>web</code> is the shipped one. The skill is available in the next session.',
   i_npx_d: 'It asks which agents to install into. The installer, <a href="https://github.com/vercel-labs/skills">vercel-labs/skills</a>, supports more than 70 agents.',
   i_manual: 'Manual',
-  i_manual_d: 'Copy the <code>skills/answer-me-with-html</code> folder into your agent’s skill folder. For Claude Code:',
+  i_manual_d: 'Copy the <code>skills/answer-me-with-any</code> folder into your agent’s skill folder. For Claude Code:',
   i_manual_note: 'Other agents: Codex <code>~/.codex/skills/</code>, Cursor <code>~/.cursor/skills/</code>, OpenCode <code>~/.config/opencode/skill/</code>.',
   i_always_k: 'Recommended',
   i_always_t: 'Always-on mode',

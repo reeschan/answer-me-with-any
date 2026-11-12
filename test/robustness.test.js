@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const AM = fileURLToPath(new URL('../skills/answer-me-with-html/scripts/am.mjs', import.meta.url));
+const AM = fileURLToPath(new URL('../skills/answer-me-with-any/scripts/am.mjs', import.meta.url));
 const COMPONENTS = ['flow', 'er', 'sequence', 'tree', 'timeline', 'limits', 'annot', 'kv', 'callout'];
 const BODIES = ['', ' ', '|', '||||', '->', '-->', 'A ->', '-> B', ':', '0', '0 / 0', '-1 / 0', 'NaN / NaN', 'x | 1e308 / 1e-308',
   'a | 5 / -3', 'max 0', '[', '{', '[(', '((((', '*', 'group g: X', 'note A: x', '== ==', 'participants:', 'A -> A', '#',

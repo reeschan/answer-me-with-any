@@ -13,8 +13,8 @@ const PKG = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
 test('bundle: the skill directory still renders after it is copied out alone', () => {
   const dir = mkdtempSync(join(tmpdir(), 'am-bundle-'));
   try {
-    cpSync(join(ROOT, 'skills/answer-me-with-html'), join(dir, 'answer-me-with-html'), { recursive: true });
-    const cli = join(dir, 'answer-me-with-html/scripts/am.mjs');
+    cpSync(join(ROOT, 'skills/answer-me-with-any'), join(dir, 'answer-me-with-any'), { recursive: true });
+    const cli = join(dir, 'answer-me-with-any/scripts/am.mjs');
     const env = { ...process.env, AM_NO_OPEN: '1' };
 
     const version = spawnSync(process.execPath, [cli, '--version'], { encoding: 'utf8', env });

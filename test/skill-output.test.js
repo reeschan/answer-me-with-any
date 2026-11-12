@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const skill = readFileSync(fileURLToPath(new URL('../skills/answer-me-with-html/SKILL.md', import.meta.url)), 'utf8');
+const skill = readFileSync(fileURLToPath(new URL('../skills/answer-me-with-any/SKILL.md', import.meta.url)), 'utf8');
 const workflow = skill.split('## 2. Workflow (one Bash call)')[1]?.split('## 3. Draft format quick reference')[0];
 
 test('skill: keep the default output, fall back to the temporary folder, and use -o only when asked or refused', () => {

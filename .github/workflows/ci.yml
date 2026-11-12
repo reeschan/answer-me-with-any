@@ -48,7 +48,7 @@ jobs:
         if: ${{ !matrix.full }}
       - name: Bundle is up to date
         if: ${{ matrix.full }}
-        run: npm run build && git diff --exit-code skills/answer-me-with-html/scripts/am.mjs
+        run: npm run build && git diff --exit-code skills/answer-me-with-any/scripts/am.mjs
       - name: Tests with coverage thresholds (lines 85, functions 85, branches 80)
         if: ${{ matrix.full }}
         run: npm run coverage
@@ -57,7 +57,7 @@ jobs:
         run: |
           set -euo pipefail
           export AM_NO_UPDATE_CHECK=1 AM_HOME="$RUNNER_TEMP/am-home"
-          AM=skills/answer-me-with-html/scripts/am.mjs
+          AM=skills/answer-me-with-any/scripts/am.mjs
           for f in examples/*.md; do
             name=$(basename "$f" .md)
             case "$name" in
@@ -120,7 +120,7 @@ jobs:
         run: |
           set -euo pipefail
           export AM_NO_UPDATE_CHECK=1 AM_HOME="$RUNNER_TEMP/am-home"
-          node skills/answer-me-with-html/scripts/am.mjs video examples/video-tcp.en.md --voice system --no-open -o out/video.html --mp4
+          node skills/answer-me-with-any/scripts/am.mjs video examples/video-tcp.en.md --voice system --no-open -o out/video.html --mp4
           ffprobe -v error -show_entries stream=codec_type,width,height -of csv=p=0 out/video.mp4 | tee probe.txt
           grep -q 'video,1920,1080' probe.txt
           grep -q 'audio' probe.txt
