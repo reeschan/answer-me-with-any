@@ -54,16 +54,16 @@ test('install: script paths referenced by commands and SKILL.md exist', () => {
       assert.ok(existsSync(join(ROOT, 'skills', rel)), `${f}: ${rel}`);
     }
   }
-  const skill = readFileSync(join(ROOT, 'skills/answer-me-with-html/SKILL.md'), 'utf8');
+  const skill = readFileSync(join(ROOT, 'skills/answer-me-with-any/SKILL.md'), 'utf8');
   for (const [, rel] of skill.matchAll(/\$\{CLAUDE_SKILL_DIR\}\/([\w./-]+)/g)) {
-    assert.ok(existsSync(join(ROOT, 'skills/answer-me-with-html', rel)), rel);
+    assert.ok(existsSync(join(ROOT, 'skills/answer-me-with-any', rel)), rel);
   }
 });
 
 test('install: the skill directory copied elsewhere renders a page without node_modules', () => {
   const dir = mkdtempSync(join(tmpdir(), 'am-install-'));
   try {
-    cpSync(join(ROOT, 'skills/answer-me-with-html'), join(dir, 'skill'), { recursive: true });
+    cpSync(join(ROOT, 'skills/answer-me-with-any'), join(dir, 'skill'), { recursive: true });
     const out = execFileSync(process.execPath, [join(dir, 'skill/scripts/am.mjs'), 'render', '-', '--no-open', '-o', join(dir, 'p.html')], {
       input: '## A 标题\n```flow\nA -> B\n```\n',
       env: { ...process.env, AM_HOME: join(dir, 'home'), AM_NO_UPDATE_CHECK: '1' },
@@ -123,8 +123,8 @@ test('install: the DSH patch resolves bundledSkillDir to the skills directory of
     symlinkSync(ROOT, join(profile, 'node_modules', json('package.json').name), 'dir');
     const dir = new Function('baseUrl', `return ${expr}`)(`${profile}/`);
     assert.equal(realpathSync(dir), realpathSync(join(ROOT, 'skills')));
-    assert.ok(existsSync(join(dir, 'answer-me-with-html/SKILL.md')));
-    assert.ok(existsSync(join(dir, 'answer-me-with-html/scripts/am.mjs')));
+    assert.ok(existsSync(join(dir, 'answer-me-with-any/SKILL.md')));
+    assert.ok(existsSync(join(dir, 'answer-me-with-any/scripts/am.mjs')));
   } finally {
     rmSync(profile, { recursive: true, force: true });
   }

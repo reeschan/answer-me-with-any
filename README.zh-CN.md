@@ -79,17 +79,17 @@ token 数存在 [bench/corpus/tokens.json](bench/corpus/tokens.json) 里，运�
 
 把下面这段话粘贴给你的 Agent。Claude Code、Codex、Cursor、OpenCode 都可以：
 
-> 帮我安装 Answer me with HTML：读 https://raw.githubusercontent.com/QingYunA/answer-me-with-html/main/INSTALL.md，照着做。
+> 帮我安装 Answer me with HTML：读 https://raw.githubusercontent.com/reeschan/answer-me-with-any/main/INSTALL.md，照着做。
 
-[INSTALL.md](INSTALL.md) 是写给 Agent 看的。它在 Claude Code 里装插件，在其他 Agent 里装 skill，已有安装会保留，除非缺少 Node.js 或版本低于 20，否则全程不向你提问，用"TCP 三次握手"页面验证后给你一份汇报。如果你的 Agent 打不开链接，用 `npx -y skills add QingYunA/answer-me-with-html -g -y -a <你的 Agent 名>`（Claude Code 是 `-a claude-code`）。
+[INSTALL.md](INSTALL.md) 是写给 Agent 看的。它在 Claude Code 里装插件，在其他 Agent 里装 skill，已有安装会保留，除非缺少 Node.js 或版本低于 20，否则全程不向你提问，用"TCP 三次握手"页面验证后给你一份汇报。如果你的 Agent 打不开链接，用 `npx -y skills add reeschan/answer-me-with-any -g -y -a <你的 Agent 名>`（Claude Code 是 `-a claude-code`）。
 
 ### Claude Code 插件
 
 在 Claude Code 里执行：
 
 ```
-/plugin marketplace add QingYunA/answer-me-with-html
-/plugin install answer-me-with-html@answer-me-with-html
+/plugin marketplace add reeschan/answer-me-with-any
+/plugin install answer-me-with-any@answer-me-with-any
 ```
 
 ### DeepSeek Harness 插件
@@ -97,13 +97,13 @@ token 数存在 [bench/corpus/tokens.json](bench/corpus/tokens.json) 里，运�
 在终端里执行。换成你在用的 profile，自带的是 `web`：
 
 ```bash
-dsh plugin --profile web add github:QingYunA/answer-me-with-html
+dsh plugin --profile web add github:reeschan/answer-me-with-any
 ```
 
 ### 一条命令
 
 ```bash
-npx skills add QingYunA/answer-me-with-html
+npx skills add reeschan/answer-me-with-any
 ```
 
 它会问你装到哪个 Agent。安装器来自 [vercel-labs/skills](https://github.com/vercel-labs/skills)，支持 70 多种 Agent。
@@ -111,11 +111,11 @@ npx skills add QingYunA/answer-me-with-html
 <details>
 <summary>手动安装</summary>
 
-把 `skills/answer-me-with-html` 这个目录放进你的 Agent 的 skill 目录就行。以 Claude Code 为例：
+把 `skills/answer-me-with-any` 这个目录放进你的 Agent 的 skill 目录就行。以 Claude Code 为例：
 
 ```bash
-git clone --depth 1 https://github.com/QingYunA/answer-me-with-html.git /tmp/answer-me-with-html
-cp -R /tmp/answer-me-with-html/skills/answer-me-with-html ~/.claude/skills/answer-me-with-html
+git clone --depth 1 https://github.com/reeschan/answer-me-with-any.git /tmp/answer-me-with-any
+cp -R /tmp/answer-me-with-any/skills/answer-me-with-any ~/.claude/skills/answer-me-with-any
 ```
 
 其他 Agent 的 skill 目录：Codex 是 `~/.codex/skills/`，Cursor 是 `~/.cursor/skills/`，OpenCode 是 `~/.config/opencode/skill/`。
@@ -170,8 +170,8 @@ Server -> Client: SYN-ACK
 
 | 在哪里 | 怎么改 |
 | :--- | :--- |
-| Claude Code（插件安装） | `/answer-me-with-html:config` 会问你要改什么；`/answer-me-with-html:config open off` 直接改 |
-| 任意 Agent | `/answer-me-with-html config open off`，或者直接说"别再自动弹浏览器了" |
+| Claude Code（插件安装） | `/answer-me-with-any:config` 会问你要改什么；`/answer-me-with-any:config open off` 直接改 |
+| 任意 Agent | `/answer-me-with-any config open off`，或者直接说"别再自动弹浏览器了" |
 | 终端 | `am config` 查看，`am config set open off` 修改，`am config reset` 恢复默认 |
 
 配置项有 `open`（自动打开浏览器）、`theme`、`mode`（亮色或暗色）、`style`（写作检查）、`format`（`html` 页面或 `md` 聊天用 Markdown）、`scale`（页面文字大小，图表跟着变大）、`update_check`、`close_after_reply`（复制回复后关闭标签页）和 `voice`（视频配音）。默认值和可选值见[参考](docs/reference.zh-CN.md#配置)。
@@ -182,13 +182,13 @@ Server -> Client: SYN-ACK
 
 默认是关的。建议打开：不用每次开口要页面，短结论也和长篇一样好读。页面会堆在 `~/.answer-me-with-html/` 里，用 `am clean` 清理。想打开，把下面这段话粘贴给你的 Agent，让它写进自己的规则文件（比如 `~/.claude/CLAUDE.md` 或 `AGENTS.md`）：
 
-> 帮我打开 Answer me with HTML 的高频模式：在你的全局规则文件里加一条规则——"[answer-me-with-html always-on] 只要回复里给出了结论、总结、方案、对比、评审或讲解，就同时用 answer-me-with-html skill 生成一页 HTML（日常结论用 2～4 个面板），先渲染页面，再写文字回复，回复最后按 SKILL.md 对当前宿主的要求附上页面链接，不要先写文字再渲染。哪怕回答很短也要出，不要因为答案不长就跳过。渲染时加 --no-open，不要弹出浏览器。闲聊、没有结论的一两句话、纯命令输出、我要求纯文本时除外。另外，子 Agent 向父 Agent 汇报属于内部材料，不是给用户的回复：按父 Agent 的要求返回完整结论与证据，除了任务明确要求出页面，否则不要生成页面。"
+> 帮我打开 Answer me with HTML 的高频模式：在你的全局规则文件里加一条规则——"[answer-me-with-any always-on] 只要回复里给出了结论、总结、方案、对比、评审或讲解，就同时用 answer-me-with-any skill 生成一页 HTML（日常结论用 2～4 个面板），先渲染页面，再写文字回复，回复最后按 SKILL.md 对当前宿主的要求附上页面链接，不要先写文字再渲染。哪怕回答很短也要出，不要因为答案不长就跳过。渲染时加 --no-open，不要弹出浏览器。闲聊、没有结论的一两句话、纯命令输出、我要求纯文本时除外。另外，子 Agent 向父 Agent 汇报属于内部材料，不是给用户的回复：按父 Agent 的要求返回完整结论与证据，除了任务明确要求出页面，否则不要生成页面。"
 
 想关掉，把这条规则删掉即可。想让页面少一点？见[少一点主动](docs/reference.zh-CN.md#少一点主动)。
 
 ## 更新与清理
 
-需要手动更新。使用时，CLI 最多每天在后台向 GitHub 查一次新版本；有新版本时，最多每三天向 Agent 提示一次，不会上传任何内容。想更新，对 Agent 说"更新一下 answer-me-with-html"。页面会堆在 `~/.answer-me-with-html/` 里，说"清理一下页面"，Agent 会先问你再删。其他安装方式和全部选项见[参考](docs/reference.zh-CN.md#更新与清理)。
+需要手动更新。使用时，CLI 最多每天在后台向 GitHub 查一次新版本；有新版本时，最多每三天向 Agent 提示一次，不会上传任何内容。想更新，对 Agent 说"更新一下 answer-me-with-any"。页面会堆在 `~/.answer-me-with-html/` 里，说"清理一下页面"，Agent 会先问你再删。其他安装方式和全部选项见[参考](docs/reference.zh-CN.md#更新与清理)。
 
 ## 为什么做这个
 
@@ -277,7 +277,7 @@ Agent 会按信息的形状挑组件：
 
 [ASD-STE100](https://www.asd-ste100.org/) 是一套受控英语，最早用来写飞机维修手册。它的规定很具体：句子不能太长，一个词只表达一个意思，操作步骤要用祈使句。Karpathy 提到，让 LLM 按这套规则写，读起来会清楚很多。
 
-每次渲染都会检查其中容易用机器检查的部分：句长、常用词、被动语态，以及中文的错别字和含糊词。默认只提醒。用 `/answer-me-with-html:config style strict` 让不达标的稿件不生成，或者在单篇稿件里写 `style:`。完整规则见[参考](docs/reference.zh-CN.md#写作检查)。
+每次渲染都会检查其中容易用机器检查的部分：句长、常用词、被动语态，以及中文的错别字和含糊词。默认只提醒。用 `/answer-me-with-any:config style strict` 让不达标的稿件不生成，或者在单篇稿件里写 `style:`。完整规则见[参考](docs/reference.zh-CN.md#写作检查)。
 
 ## 开发
 
@@ -287,7 +287,7 @@ npm install
 npm test          # 跑测试
 AM_E2E=1 npm test # 连同视频端到端测试一起跑（需要系统 TTS、Chrome、ffmpeg）
 npm run smoke:install # 用 npx skills 真实安装一次，并校验插件清单（需要联网）
-npm run build     # 改了 src/ 之后，重新打包 skills/answer-me-with-html/scripts/am.mjs
+npm run build     # 改了 src/ 之后，重新打包 skills/answer-me-with-any/scripts/am.mjs
 npm run snapshot  # 与 origin/main 对比生成的 HTML（重构不能改变它）
 ```
 
@@ -318,4 +318,4 @@ npm run snapshot  # 与 origin/main 对比生成的 HTML（重构不能改变它
 
 ## License
 
-[MIT](LICENSE)。主题可以内嵌的 Bangers 字体使用 [SIL Open Font License 1.1](skills/answer-me-with-html/licenses/OFL-Bangers.txt)。
+[MIT](LICENSE)。主题可以内嵌的 Bangers 字体使用 [SIL Open Font License 1.1](skills/answer-me-with-any/licenses/OFL-Bangers.txt)。

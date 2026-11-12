@@ -80,17 +80,17 @@ You need [Node.js](https://nodejs.org/) 20 or newer. There is no `npm install` s
 
 Paste this into Claude Code, Codex, Cursor, OpenCode or any other agent:
 
-> Install Answer me with HTML: read https://raw.githubusercontent.com/QingYunA/answer-me-with-html/main/INSTALL.md and follow it.
+> Install Answer me with HTML: read https://raw.githubusercontent.com/reeschan/answer-me-with-any/main/INSTALL.md and follow it.
 
-[INSTALL.md](INSTALL.md) is written for agents. It installs the plugin in Claude Code and the skill in other agents, keeps an existing install, asks you nothing unless Node.js is missing or older than 20, and ends with one report after checking the result with the TCP three-way handshake page. If your agent cannot open links, use `npx -y skills add QingYunA/answer-me-with-html -g -y -a <your agent name>` (for Claude Code, `-a claude-code`).
+[INSTALL.md](INSTALL.md) is written for agents. It installs the plugin in Claude Code and the skill in other agents, keeps an existing install, asks you nothing unless Node.js is missing or older than 20, and ends with one report after checking the result with the TCP three-way handshake page. If your agent cannot open links, use `npx -y skills add reeschan/answer-me-with-any -g -y -a <your agent name>` (for Claude Code, `-a claude-code`).
 
 ### Claude Code plugin
 
 Run this inside Claude Code:
 
 ```
-/plugin marketplace add QingYunA/answer-me-with-html
-/plugin install answer-me-with-html@answer-me-with-html
+/plugin marketplace add reeschan/answer-me-with-any
+/plugin install answer-me-with-any@answer-me-with-any
 ```
 
 ### DeepSeek Harness plugin
@@ -98,13 +98,13 @@ Run this inside Claude Code:
 Run this in a terminal, with the profile you run in (`web` is the shipped one):
 
 ```bash
-dsh plugin --profile web add github:QingYunA/answer-me-with-html
+dsh plugin --profile web add github:reeschan/answer-me-with-any
 ```
 
 ### One command
 
 ```bash
-npx skills add QingYunA/answer-me-with-html
+npx skills add reeschan/answer-me-with-any
 ```
 
 It asks which agents to install into. The installer, [vercel-labs/skills](https://github.com/vercel-labs/skills), supports more than 70 agents.
@@ -112,11 +112,11 @@ It asks which agents to install into. The installer, [vercel-labs/skills](https:
 <details>
 <summary>Manual install</summary>
 
-Copy the `skills/answer-me-with-html` folder into your agent's skill folder. For Claude Code:
+Copy the `skills/answer-me-with-any` folder into your agent's skill folder. For Claude Code:
 
 ```bash
-git clone --depth 1 https://github.com/QingYunA/answer-me-with-html.git /tmp/answer-me-with-html
-cp -R /tmp/answer-me-with-html/skills/answer-me-with-html ~/.claude/skills/answer-me-with-html
+git clone --depth 1 https://github.com/reeschan/answer-me-with-any.git /tmp/answer-me-with-any
+cp -R /tmp/answer-me-with-any/skills/answer-me-with-any ~/.claude/skills/answer-me-with-any
 ```
 
 Skill folders for other agents: Codex `~/.codex/skills/`, Cursor `~/.cursor/skills/`, OpenCode `~/.config/opencode/skill/`.
@@ -171,8 +171,8 @@ Change settings with a slash command. There are no config files to edit by hand.
 
 | Where | How |
 | :--- | :--- |
-| Claude Code (plugin install) | `/answer-me-with-html:config` asks what to change. `/answer-me-with-html:config open off` changes it directly |
-| Any agent | `/answer-me-with-html config open off`, or just say "stop opening the browser" |
+| Claude Code (plugin install) | `/answer-me-with-any:config` asks what to change. `/answer-me-with-any:config open off` changes it directly |
+| Any agent | `/answer-me-with-any config open off`, or just say "stop opening the browser" |
 | Terminal | `am config` to view, `am config set open off` to change, `am config reset` to restore defaults |
 
 The settings are `open` (open pages in the browser), `theme`, `mode` (light or dark), `style` (writing check), `format` (`html` page or `md` chat Markdown), `scale` (text size on the page; diagrams and charts grow with it), `update_check`, `close_after_reply` (close the tab after the reply is copied) and `voice` (video narration). Defaults and values: [reference](docs/reference.md#settings).
@@ -183,13 +183,13 @@ With always-on mode, **every conclusion comes with a page**: whenever the agent 
 
 It is off by default. We recommend it: you stop asking for pages, and short answers read as well as long ones. Pages pile up in `~/.answer-me-with-html/`; clear them with `am clean`. To turn it on, paste this to your agent so it writes the rule into its rules file, such as `~/.claude/CLAUDE.md` or `AGENTS.md`:
 
-> Turn on always-on mode for Answer me with HTML: add a global rule — "[answer-me-with-html always-on] Whenever a reply gives a conclusion, summary, plan, comparison, review or explanation, even a short one, also make a page with the answer-me-with-html skill (2 to 4 panels for routine answers), render it with --no-open before you write the reply, and end the reply with the page link in the format SKILL.md specifies for your host. Skip casual chat, one- or two-sentence replies with no conclusion, pure command output, and requests for plain text. An internal report to another agent is not a user reply: return the findings and evidence the parent asked for, and make no page unless the task explicitly asks for one."
+> Turn on always-on mode for Answer me with HTML: add a global rule — "[answer-me-with-any always-on] Whenever a reply gives a conclusion, summary, plan, comparison, review or explanation, even a short one, also make a page with the answer-me-with-any skill (2 to 4 panels for routine answers), render it with --no-open before you write the reply, and end the reply with the page link in the format SKILL.md specifies for your host. Skip casual chat, one- or two-sentence replies with no conclusion, pure command output, and requests for plain text. An internal report to another agent is not a user reply: return the findings and evidence the parent asked for, and make no page unless the task explicitly asks for one."
 
 To turn it off, delete that rule. Want fewer pages instead? See [less proactive](docs/reference.md#less-proactive).
 
 ## Updating and cleaning up
 
-Updates are manual. When used, the CLI checks GitHub for a new version in the background at most once a day. If one is available, it prompts the agent at most once every three days; nothing about you is sent. To update, tell your agent "update answer-me-with-html". Pages pile up in `~/.answer-me-with-html/`. Say "clean up the pages", and the agent asks before it deletes anything. Other install methods and every option: [reference](docs/reference.md#updating-and-cleaning-up).
+Updates are manual. When used, the CLI checks GitHub for a new version in the background at most once a day. If one is available, it prompts the agent at most once every three days; nothing about you is sent. To update, tell your agent "update answer-me-with-any". Pages pile up in `~/.answer-me-with-html/`. Say "clean up the pages", and the agent asks before it deletes anything. Other install methods and every option: [reference](docs/reference.md#updating-and-cleaning-up).
 
 ## Background
 
@@ -278,7 +278,7 @@ The draft format (frontmatter, `span`, `rows`, raw `html` / `svg` blocks) and ho
 
 [ASD-STE100](https://www.asd-ste100.org/) is a controlled form of English first used for aircraft maintenance manuals. Its rules are concrete: keep sentences short, give each word one meaning, write steps as commands. Karpathy noted that asking an LLM to follow these rules makes its writing much easier to read.
 
-Every render checks the parts a machine can check: sentence length, plain words, passive voice, and common Chinese typos and vague words. It only warns by default. Set `/answer-me-with-html:config style strict` to refuse drafts that fail, or `style:` in one draft. The full rule list: [reference](docs/reference.md#writing-check).
+Every render checks the parts a machine can check: sentence length, plain words, passive voice, and common Chinese typos and vague words. It only warns by default. Set `/answer-me-with-any:config style strict` to refuse drafts that fail, or `style:` in one draft. The full rule list: [reference](docs/reference.md#writing-check).
 
 ## Development
 
@@ -288,7 +288,7 @@ npm install
 npm test          # run the tests
 AM_E2E=1 npm test # also run end-to-end video tests (system TTS, Chrome, ffmpeg)
 npm run smoke:install # install for real with npx skills and validate the plugin manifests (needs network)
-npm run build     # after changing src/, rebuild skills/answer-me-with-html/scripts/am.mjs
+npm run build     # after changing src/, rebuild skills/answer-me-with-any/scripts/am.mjs
 npm run snapshot  # compare rendered HTML with origin/main (refactors must not change it)
 ```
 
@@ -319,4 +319,4 @@ Found a bug? Please open a [GitHub issue](https://github.com/QingYunA/answer-me-
 
 ## License
 
-[MIT](LICENSE). The Bangers font that a theme can embed is under the [SIL Open Font License 1.1](skills/answer-me-with-html/licenses/OFL-Bangers.txt).
+[MIT](LICENSE). The Bangers font that a theme can embed is under the [SIL Open Font License 1.1](skills/answer-me-with-any/licenses/OFL-Bangers.txt).

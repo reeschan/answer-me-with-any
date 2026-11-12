@@ -165,7 +165,7 @@ function copyPresets(dist) {
 // Pages drawn by the bundled CLI, the way a visitor's agent would draw them. The catalog themes are installed in a throwaway AM_HOME, never in the real one.
 function prerender(dist, catalog) {
   const home = mkdtempSync(join(tmpdir(), 'am-site-'));
-  const am = join(ROOT, 'skills/answer-me-with-html/scripts/am.mjs');
+  const am = join(ROOT, 'skills/answer-me-with-any/scripts/am.mjs');
   const jobs = PRERENDER.map(([cmd, draft, name]) => [cmd, join(ROOT, draft), join(dist, 'prerender', name), ...(cmd === 'video' ? ['--voice', 'off'] : [])]);
   for (const { name } of catalog) {
     for (const [, draft, dir] of THEME_SAMPLES) jobs.push(['render', join(ROOT, draft), join(dist, dir, name, 'preview.html'), '--theme', name, '--mode', 'light']);

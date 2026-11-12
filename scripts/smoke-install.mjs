@@ -43,7 +43,7 @@ function checkPluginCopy(dir) {
 
 // The commands in INSTALL.md are run as written, so the guide cannot drift from what works.
 // Only the repository source and the agent name are substituted; `claude` is a shim for the pinned Claude Code CLI.
-const GUIDE_SOURCE = 'QingYunA/answer-me-with-html';
+const GUIDE_SOURCE = 'reeschan/answer-me-with-any';
 
 function guideBlocks() {
   const blocks = [];
@@ -93,14 +93,14 @@ function runGuide() {
     step(`INSTALL.md, skill route, agent "${agent}"`);
     const { h, bash } = scenario(agent);
     bash(block('Step 1'));
-    if (/answer-me-with-html/.test(bash(block('Step 2'), { allowFail: true }))) throw new Error('Step 2 found an install in a fresh HOME');
+    if (/answer-me-with-any/.test(bash(block('Step 2'), { allowFail: true }))) throw new Error('Step 2 found an install in a fresh HOME');
     bash(block('Any other agent'));
     if (!bash(block('Step 4')).includes(version)) throw new Error(`Step 4 did not print ${version}`);
     const am = find(h, 'am.mjs');
     if (!am) throw new Error('am.mjs not found after the guide installed the skill');
     const page = execFileSync(process.execPath, [am, 'render', '-', '--no-open'], { encoding: 'utf8', env: { ...env, HOME: h, AM_HOME: join(h, '.answer-me-with-html') }, input: '## A 标题\n文字\n' });
     if (!/^✓ /m.test(page)) throw new Error(`the guide's skill install cannot render a page:\n${page}`);
-    if (!/answer-me-with-html/.test(bash(block('Step 2'), { allowFail: true }))) throw new Error('Step 2 did not find the install it just made');
+    if (!/answer-me-with-any/.test(bash(block('Step 2'), { allowFail: true }))) throw new Error('Step 2 did not find the install it just made');
     process.stdout.write(`✓ ${agent}: install, version check and render work\n`);
   }
 
@@ -108,11 +108,11 @@ function runGuide() {
   const { h, bash } = scenario('claude-code', { isolateClaude: true });
   bash(block('Step 1'));
   bash(block('Claude Code'));
-  if (!/answer-me-with-html@answer-me-with-html[\s\S]*enabled/.test(bash('claude plugin list'))) throw new Error('plugin is not listed as enabled');
-  const pluginAm = find(join(h, '.claude-config', 'plugins', 'cache', 'answer-me-with-html', 'answer-me-with-html'), 'am.mjs');
+  if (!/answer-me-with-any@answer-me-with-any[\s\S]*enabled/.test(bash('claude plugin list'))) throw new Error('plugin is not listed as enabled');
+  const pluginAm = find(join(h, '.claude-config', 'plugins', 'cache', 'answer-me-with-any', 'answer-me-with-any'), 'am.mjs');
   if (!pluginAm) throw new Error('am.mjs not found after the guide installed the plugin');
-  if (!find(join(h, '.claude-config', 'plugins', 'cache', 'answer-me-with-html', 'answer-me-with-html'), 'config.md')) throw new Error('the config command is not part of the installed plugin');
-  checkPluginCopy(join(h, '.claude-config', 'plugins', 'cache', 'answer-me-with-html', 'answer-me-with-html'));
+  if (!find(join(h, '.claude-config', 'plugins', 'cache', 'answer-me-with-any', 'answer-me-with-any'), 'config.md')) throw new Error('the config command is not part of the installed plugin');
+  checkPluginCopy(join(h, '.claude-config', 'plugins', 'cache', 'answer-me-with-any', 'answer-me-with-any'));
   bash(updateCmd('claude plugin update'));
   process.stdout.write('✓ plugin route: install, enabled, commands present, update works\n');
   rmSync(h, { recursive: true, force: true });
@@ -122,10 +122,10 @@ try {
   step('npx skills add -l');
   const list = strip(sh('npx', ['-y', 'skills@latest', 'add', ROOT, '-l']));
   // Check only key signals, not the full wording: a skip / parse error fails, and the list must contain the skill name.
-  if (/Skipped|parse error|No (valid )?skills found/i.test(list) || !/answer-me-with-html/.test(list)) {
+  if (/Skipped|parse error|No (valid )?skills found/i.test(list) || !/answer-me-with-any/.test(list)) {
     throw new Error(`skills CLI did not recognize the skill:\n${list}`);
   }
-  process.stdout.write('✓ skills CLI recognizes answer-me-with-html\n');
+  process.stdout.write('✓ skills CLI recognizes answer-me-with-any\n');
 
   step('npx skills add -g (temporary HOME)');
   sh('npx', ['-y', 'skills@latest', 'add', ROOT, '-g', '-a', 'claude-code', '-y', '--copy']);
@@ -139,13 +139,13 @@ try {
   const cfg = join(home, '.claude-config');
   const claude = (...args) => sh('npx', ['-y', '@anthropic-ai/claude-code@latest', 'plugin', ...args], { env: { ...env, CLAUDE_CONFIG_DIR: cfg } });
   claude('marketplace', 'add', ROOT);
-  claude('install', 'answer-me-with-html@answer-me-with-html');
-  const cache = join(cfg, 'plugins', 'cache', 'answer-me-with-html');
-  const pluginAm = find(join(cache, 'answer-me-with-html'), 'am.mjs');
+  claude('install', 'answer-me-with-any@answer-me-with-any');
+  const cache = join(cfg, 'plugins', 'cache', 'answer-me-with-any');
+  const pluginAm = find(join(cache, 'answer-me-with-any'), 'am.mjs');
   if (!pluginAm) throw new Error('am.mjs not found after plugin install');
   const out2 = sh(process.execPath, [pluginAm, 'render', '-', '--no-open'], { input: '## A 标题\n文字\n' });
   if (!/^✓ /m.test(out2)) throw new Error(`the plugin's am.mjs cannot render a page:\n${out2}`);
-  checkPluginCopy(join(cache, 'answer-me-with-html'));
+  checkPluginCopy(join(cache, 'answer-me-with-any'));
   process.stdout.write('✓ the plugin installs without node_modules or symlinks, and its am.mjs renders a page\n');
 
   step('claude plugin validate');

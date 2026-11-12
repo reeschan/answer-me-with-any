@@ -43,7 +43,7 @@ before(async () => {
   if (SKIP) return;
   tmp = mkdtempSync(join(tmpdir(), 'am-update-'));
   file = join(tmp, 'page.html');
-  const update = { latest: '0.9.0', current: '0.5.0', command: 'npx skills update answer-me-with-html -y' };
+  const update = { latest: '0.9.0', current: '0.5.0', command: 'npx skills update answer-me-with-any -y' };
   writeFileSync(file, renderDoc('---\nlang: en\n---\n## A\nText.', {}, {}, { update }).html);
   server = createServer((_req, res) => res.writeHead(200, { 'Content-Type': 'text/html' }).end(readFileSync(file)));
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
@@ -84,7 +84,7 @@ test('update: from disk the button shows, opens the popover, and its copy button
     await new Promise((r) => setTimeout(r, 50));
     return { open, copied: window.copied, label: copy.textContent };
   })()`);
-  assert.deepEqual(r, { open: true, copied: 'npx skills update answer-me-with-html -y', label: 'Copied ✓' });
+  assert.deepEqual(r, { open: true, copied: 'npx skills update answer-me-with-any -y', label: 'Copied ✓' });
 });
 
 test('update: the page does not judge its address: the button also shows under another host name', { skip: SKIP }, async () => {

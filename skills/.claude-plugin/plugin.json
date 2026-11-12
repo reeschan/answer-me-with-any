@@ -1,12 +1,12 @@
 {
-  "name": "answer-me-with-html",
+  "name": "answer-me-with-any",
   "description": "Answer hard questions with a one-page HTML: the model writes a short Markdown draft; the bundled CLI handles templates, SVG auto-layout and an STE controlled-writing check.",
   "version": "0.5.11",
   "author": {
     "name": "QingYunA"
   },
-  "homepage": "https://github.com/QingYunA/answer-me-with-html",
-  "repository": "https://github.com/QingYunA/answer-me-with-html",
+  "homepage": "https://github.com/reeschan/answer-me-with-any",
+  "repository": "https://github.com/reeschan/answer-me-with-any",
   "license": "MIT",
   "keywords": [
     "html",

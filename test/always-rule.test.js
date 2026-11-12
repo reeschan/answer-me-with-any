@@ -5,12 +5,12 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const read = (p) => readFileSync(`${ROOT}/${p}`, 'utf8');
-const MARKER = '[answer-me-with-html always-on]';
+const MARKER = '[answer-me-with-any always-on]';
 
 // Always-on mode is a rule the user pastes into a rules file. SKILL.md recognizes it by this marker,
 // so the README snippets must carry the same one.
 test('always-on rule: SKILL.md and both README snippets use the same marker', () => {
-  for (const file of ['skills/answer-me-with-html/SKILL.md', 'README.md', 'README.zh-CN.md']) {
+  for (const file of ['skills/answer-me-with-any/SKILL.md', 'README.md', 'README.zh-CN.md']) {
     assert.ok(read(file).includes(MARKER), `${file} is missing ${MARKER}`);
   }
 });

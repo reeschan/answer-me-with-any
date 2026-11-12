@@ -186,7 +186,7 @@ Full syntax: `am help chart`.
 The CLI is `scripts/am.mjs` inside the skill folder.
 
 ````bash
-AM=skills/answer-me-with-html/scripts/am.mjs
+AM=skills/answer-me-with-any/scripts/am.mjs
 
 node $AM render examples/tcp.en.md                # render and open in the browser
 node $AM render notes.md -o out.html --no-open    # choose the output file, don't open
@@ -376,14 +376,14 @@ am serve --tailscale  # listen on your Tailscale address only; open the links fr
 
 | Installed with | Update with |
 | :--- | :--- |
-| `npx skills add` | `npx skills update answer-me-with-html -y`, or tell your agent "update answer-me-with-html" |
+| `npx skills add` | `npx skills update answer-me-with-any -y`, or tell your agent "update answer-me-with-any" |
 | `git clone` + `npm link` | `git pull && npm install` in the repository |
 | DeepSeek Harness plugin | `dsh plugin --profile <profile> up <package>`; the update notice fills in the profile and the package |
-| Claude Code plugin | In a terminal run `claude plugin update answer-me-with-html@answer-me-with-html` (or open `/plugin` → Installed → Update now), then `/reload-plugins`. To update automatically, turn on auto-update for this marketplace in `/plugin` → Marketplaces. Claude Code leaves it off for third-party marketplaces |
+| Claude Code plugin | In a terminal run `claude plugin update answer-me-with-any@answer-me-with-any` (or open `/plugin` → Installed → Update now), then `/reload-plugins`. To update automatically, turn on auto-update for this marketplace in `/plugin` → Marketplaces. Claude Code leaves it off for third-party marketplaces |
 
 **Cleaning up.** Pages, videos and the narration cache build up in `~/.answer-me-with-html/`. If that folder grows past 200 MB, or passes 20 MB with no cleanup for 30 days, the agent asks once a week whether to clean it. Nothing is deleted without your OK.
 
-- `/answer-me-with-html:clean` (plugin), or say "clean up the pages", previews first and then asks.
+- `/answer-me-with-any:clean` (plugin), or say "clean up the pages", previews first and then asks.
 - `am clean` deletes pages, videos and saved drafts older than 30 days and empties the narration cache. `--days N` changes the cutoff, `--all` removes every page, video and draft, and `--dry-run` only shows what would go. Your settings and themes are always kept. If `pages`, `videos` or `cache` is itself a symlink, it is skipped: `am clean` never touches the files it points to, and the size count and cleanup hint ignore it. A folder that cannot be read is skipped too: its files are left out of the size count and the cleanup hint, so the size you see can be lower than the real use, and `am clean` does not delete them.
 
 **Old always-on plugin.** It is gone from this repository, but your copy keeps adding the reminder until you remove it. Run `/plugin uninstall answer-me-with-html-always@answer-me-with-html`, then add the always-on rule from the [README](../README.md#always-on-mode-recommended).
@@ -413,11 +413,11 @@ By default the agent makes a page whenever one would help. If that is too much, 
 
 **Only when you ask in words.** Add this rule to your rules file, such as `~/.claude/CLAUDE.md` or `AGENTS.md`:
 
-> Do not use the answer-me-with-html skill unless I ask for a page, a diagram or a visual explanation, or say I don't get it.
+> Do not use the answer-me-with-any skill unless I ask for a page, a diagram or a visual explanation, or say I don't get it.
 
 The rule survives updates. The agent still sees the skill, so it follows the rule by judgment.
 
-**Only with the slash command (Claude Code).** Add `disable-model-invocation: true` to the frontmatter of the installed `SKILL.md`, such as `~/.claude/skills/answer-me-with-html/SKILL.md`. The agent then never sees the skill, and a page appears only when you type `/answer-me-with-html`. An update replaces the file, so add the line again afterwards. See the [Claude Code skills docs](https://code.claude.com/docs/en/skills).
+**Only with the slash command (Claude Code).** Add `disable-model-invocation: true` to the frontmatter of the installed `SKILL.md`, such as `~/.claude/skills/answer-me-with-any/SKILL.md`. The agent then never sees the skill, and a page appears only when you type `/answer-me-with-any`. An update replaces the file, so add the line again afterwards. See the [Claude Code skills docs](https://code.claude.com/docs/en/skills).
 
 ## Writing check
 
@@ -430,4 +430,4 @@ Answer me with HTML turns the parts a machine can check into an English and Chin
 - **Japanese:** A draft with kana is treated as Japanese: the page buttons are in Japanese and the page gets `lang="ja"`. Only the length rules apply, with the Chinese character limits. Write `lang: ja` in the draft to force it.
 - **Other languages:** Any other language gets only the length rules: sentences in words (characters for Chinese and Japanese text), paragraphs in sentences. The English and Chinese word lists and the passive-voice rule do not run on it.
 
-Set the strictness with `/answer-me-with-html:config style strict`, or per page with `style:` in the draft.
+Set the strictness with `/answer-me-with-any:config style strict`, or per page with `style:` in the draft.

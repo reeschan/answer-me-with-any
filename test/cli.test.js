@@ -152,7 +152,7 @@ test('cli render: -o rejects an existing folder with one actionable error', asyn
 
 test('cli executable: a folder output exits without an internal stack', () => {
   mkdirSync(join(dir, 'bundle-folder'));
-  const cli = fileURLToPath(new URL('../skills/answer-me-with-html/scripts/am.mjs', import.meta.url));
+  const cli = fileURLToPath(new URL('../skills/answer-me-with-any/scripts/am.mjs', import.meta.url));
   const r = spawnSync(process.execPath, [cli, 'render', '-', '-o', 'bundle-folder'], {
     cwd: dir, input: GOOD, encoding: 'utf8',
     env: { ...process.env, AM_HOME: dir, AM_NO_OPEN: '1', AM_NO_UPDATE_CHECK: '1' },

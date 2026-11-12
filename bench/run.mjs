@@ -28,14 +28,14 @@ const VIDEO = process.env.BENCH_KIND === 'video';
 // BENCH_LEAN=1 runs with a small context: only project settings, no MCP servers, and the skill from this repo
 // installed in the work folder. Without it the run uses your own Claude Code setup (plugins, rules, skills).
 const LEAN = process.env.BENCH_LEAN === '1';
-const SKILL_DIR = fileURLToPath(new URL('../skills/answer-me-with-html', import.meta.url));
+const SKILL_DIR = fileURLToPath(new URL('../skills/answer-me-with-any', import.meta.url));
 const PAGE_MODES = {
   plain: {
     prompt: (t) => `Explain ${t} as a single self-contained HTML page: inline CSS, SVG diagrams where useful, no external resources. Save it to ./out.html with the Write tool. Do not use any skills. Then reply with one short sentence.`,
     args: ['--allowedTools', 'Write', '--disallowedTools', 'Skill', 'Bash'],
   },
   skill: {
-    prompt: (t) => `Explain ${t}. Use the answer-me-with-html skill to make the page, and render it with -o ./out.html --no-open. Then reply with one short sentence.`,
+    prompt: (t) => `Explain ${t}. Use the answer-me-with-any skill to make the page, and render it with -o ./out.html --no-open. Then reply with one short sentence.`,
     args: ['--allowedTools', 'Skill', 'Bash', 'Read'],
   },
 };
@@ -46,7 +46,7 @@ const VIDEO_MODES = {
     args: ['--allowedTools', 'Write', '--disallowedTools', 'Skill', 'Bash'],
   },
   skill: {
-    prompt: (t) => `Make a 3Blue1Brown-style explainer video about ${t}. Use the answer-me-with-html skill (am video, theme 3b1b) with --voice off, and render it with -o ./out.html --no-open. Then reply with one short sentence.`,
+    prompt: (t) => `Make a 3Blue1Brown-style explainer video about ${t}. Use the answer-me-with-any skill (am video, theme 3b1b) with --voice off, and render it with -o ./out.html --no-open. Then reply with one short sentence.`,
     args: ['--allowedTools', 'Skill', 'Bash', 'Read'],
   },
 };
@@ -89,7 +89,7 @@ function runOnce(topic, cfg) {
   const lean = LEAN ? ['--setting-sources', 'project', '--strict-mcp-config'] : [];
   if (LEAN && cfg.args.includes('Skill') && !cfg.args.includes('--disallowedTools')) {
     mkdirSync(join(work, '.claude', 'skills'), { recursive: true });
-    cpSync(SKILL_DIR, join(work, '.claude', 'skills', 'answer-me-with-html'), { recursive: true });
+    cpSync(SKILL_DIR, join(work, '.claude', 'skills', 'answer-me-with-any'), { recursive: true });
   }
   const started = Date.now();
   const r = spawnSync('claude', ['-p', '--model', MODEL, '--output-format', 'json', '--permission-mode', 'acceptEdits', ...lean, ...cfg.args, '--', cfg.prompt(topic.text) + SUFFIX], {

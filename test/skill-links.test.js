@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const skill = readFileSync(new URL('../skills/answer-me-with-html/SKILL.md', import.meta.url), 'utf8');
+const skill = readFileSync(new URL('../skills/answer-me-with-any/SKILL.md', import.meta.url), 'utf8');
 const reply = skill.slice(skill.indexOf('5. Reply in the terminal'), skill.indexOf('\nWhen a page already exists'));
 const lines = reply.split('\n');
 

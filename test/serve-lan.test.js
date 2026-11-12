@@ -210,7 +210,7 @@ function body(port, path, host) {
 test('a page goes to a LAN or public address without its new-version button, and to this computer with it', async () => {
   const home = mkdtempSync(join(tmpdir(), 'am-lan-update-'));
   mkdirSync(join(home, 'pages'));
-  const update = { latest: '0.9.0', current: '0.5.0', command: 'npx skills update answer-me-with-html -y' };
+  const update = { latest: '0.9.0', current: '0.5.0', command: 'npx skills update answer-me-with-any -y' };
   const page = renderDoc('## A\nx', {}, {}, { update }).html;
   writeFileSync(join(home, 'pages', 'test.html'), page);
   let srv;

@@ -39,7 +39,7 @@ before(async () => {
   if (SKIP) return;
   tmp = mkdtempSync(join(tmpdir(), 'am-copy-'));
   file = join(tmp, 'page.html');
-  const update = { latest: '0.9.0', current: '0.5.0', command: 'npx skills update answer-me-with-html -y' };
+  const update = { latest: '0.9.0', current: '0.5.0', command: 'npx skills update answer-me-with-any -y' };
   writeFileSync(file, renderDoc('---\nlang: en\n---\n## A\nText.\n\n```js\nconst a = 1;\n```\n', {}, {}, { update }).html);
   chrome = spawn(CHROME, ['--headless=new', '--remote-debugging-port=0', `--user-data-dir=${join(tmp, 'profile')}`, '--no-first-run', '--no-default-browser-check', 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
   cdp = await connect(await devtoolsUrl(chrome));

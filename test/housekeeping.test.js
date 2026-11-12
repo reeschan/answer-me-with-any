@@ -190,8 +190,8 @@ test('newer / updateHint / updateCommand: hint only when a newer version exists,
   assert.ok(!newer('0.3.0', '0.3.0'));
   assert.ok(!newer('0.2.9', '0.3.0'));
   assert.equal(updateHint({ latestVersion: '0.3.0' }, '0.3.0', ''), null);
-  assert.match(updateHint({ latestVersion: '0.4.0' }, '0.3.0', '/x/.agents/skills/a/scripts/am.mjs'), /npx skills update answer-me-with-html -y/);
-  assert.match(updateCommand('/Users/u/.claude/plugins/cache/answer-me-with-html/answer-me-with-html/0.3.0/skills/x/scripts/am.mjs'), /claude plugin update answer-me-with-html@answer-me-with-html/);
+  assert.match(updateHint({ latestVersion: '0.4.0' }, '0.3.0', '/x/.agents/skills/a/scripts/am.mjs'), /npx skills update answer-me-with-any -y/);
+  assert.match(updateCommand('/Users/u/.claude/plugins/cache/answer-me-with-any/answer-me-with-any/0.3.0/skills/x/scripts/am.mjs'), /claude plugin update answer-me-with-any@answer-me-with-any/);
   assert.equal(updateHint({ latestVersion: '0.4.0', lastUpdateHint: NOW - DAY }, '0.3.0', '', NOW), null, 'throttled');
 });
 
@@ -199,9 +199,9 @@ test('pageUpdate: the page gets the button whenever a newer version is known, wi
   assert.equal(pageUpdate({}, '0.3.0', '', {}, {}), null);
   assert.equal(pageUpdate({ latestVersion: '0.3.0' }, '0.3.0', '', {}, {}), null);
   assert.deepEqual(pageUpdate({ latestVersion: '0.4.0', lastUpdateHint: NOW }, '0.3.0', '/x/.agents/skills/a/scripts/am.mjs', {}, {}),
-    { latest: '0.4.0', current: '0.3.0', command: 'npx skills update answer-me-with-html -y', highlights: null }, 'not throttled by the agent hint');
+    { latest: '0.4.0', current: '0.3.0', command: 'npx skills update answer-me-with-any -y', highlights: null }, 'not throttled by the agent hint');
   assert.equal(pageUpdate({ latestVersion: '0.4.0' }, '0.3.0', '/Users/u/.claude/plugins/cache/a/b/0.3.0/skills/x/scripts/am.mjs', {}, {}).command,
-    'claude plugin update answer-me-with-html@answer-me-with-html');
+    'claude plugin update answer-me-with-any@answer-me-with-any');
   assert.equal(pageUpdate({ latestVersion: '0.4.0' }, '0.3.0', '/home/u/answer-me-with-html/bin/am.js', {}, {}).command, 'git pull && npm install');
   assert.equal(pageUpdate({ latestVersion: '0.4.0' }, '0.3.0', '', { CI: 'true' }, {}), null);
   assert.equal(pageUpdate({ latestVersion: '0.4.0' }, '0.3.0', '', { AM_NO_UPDATE_CHECK: '1' }, {}), null);

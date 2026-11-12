@@ -1,7 +1,7 @@
 /*!
  * Bangers: Copyright 2010 The Bangers Project Authors (https://github.com/googlefonts/bangers).
  * This Font Software is licensed under the SIL Open Font License, Version 1.1 (https://openfontlicense.org),
- * the full text of which is in skills/answer-me-with-html/licenses/OFL-Bangers.txt (a copy of node_modules/@fontsource/bangers/LICENSE;
+ * the full text of which is in skills/answer-me-with-any/licenses/OFL-Bangers.txt (a copy of node_modules/@fontsource/bangers/LICENSE;
  * `npx skills add` copies only the skill folder, and the bundle there carries the font). The font is embedded unchanged, as a Latin subset in WOFF2.
  */
 // The page styles for a theme's own font: an @font-face with the font file inlined (the page needs no network).
