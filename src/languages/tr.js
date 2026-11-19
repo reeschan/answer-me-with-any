@@ -15,7 +15,7 @@ export default {
     mode: { auto: 'Otomatik', light: 'Açık', dark: 'Koyu' },
     scale: { down: 'Daha küçük yazı', up: 'Daha büyük yazı' },
     copy: 'Kaynağı kopyala', done: 'Kopyalandı ✓', copyCode: 'Kopyala',
-    update: { button: 'Yeni sürüm {version}', current: 'Sizdeki sürüm {current}. Yeni sürüm bu sayfa oluşturulurken bulundu.', whatsNew: 'Yenilikler:', run: 'Terminalde çalıştırın:', agent: 'Ya da Agent’a söyleyin:', agentText: 'answer-me-with-html’i güncelle', notes: 'Yenilikleri gör' },
+    update: { button: 'Yeni sürüm {version}', current: 'Sizdeki sürüm {current}. Yeni sürüm bu sayfa oluşturulurken bulundu.', whatsNew: 'Yenilikler:', run: 'Terminalde çalıştırın:', agent: 'Ya da Agent’a söyleyin:', agentText: 'answer-me-with-any’i güncelle', notes: 'Yenilikleri gör' },
     live: { updated: 'Sayfa güncellendi', reload: 'Yeniden yükle' },
     reply: {
       button: 'Yanıtla', comment: 'Yorum', commentHint: 'Bu panel hakkındaki yorumunuz', title: 'Yanıtınız',
