@@ -225,6 +225,26 @@ test('reply envelope: an older saved answer is restored with the same reply body
   await evaluate('localStorage.clear()');
 });
 
+// Reply-meta values stay strings, and metadata never turns an unselected ask into an answer.
+test('reply envelope: metadata values stay strings and an unselected ask stays "not answered"', { skip: SKIP }, async () => {
+  const draft = join(tmp, 'strings.md');
+  writeFileSync(draft, DRAFT.replace('lang: en\n', 'lang: en\nreply-meta-id: 007\nreply-meta-flag: true\nreply-meta-n: 1e3\n'));
+  const page = join(tmp, 'strings.html');
+  execFileSync(process.execPath, [join(ROOT, 'bin/am.js'), 'render', draft, '-o', page, '--no-open'], {
+    env: { ...process.env, AM_NO_UPDATE_CHECK: '1', AM_HOME: join(tmp, 'home') }, stdio: 'pipe',
+  });
+  const result = await copySheet(page);
+  const text = result.text.replace(/\r\n/g, '\n');
+  // Picking Memcached leaves B (suggested: Retry) and D (suggested: Yes) unselected.
+  assert.match(text, /1\. \[A\] Which cache do we use\?\n {3}→ \*\*Memcached\*\* _\(was: Redis\)_/);
+  assert.match(text, /2\. \[B\] Which events do we log\?\n {3}→ \*\*—\*\* _\(not answered; suggested: Retry\)_/);
+  assert.match(text, /3\. \[D\] Do we ship it this week\?\n {3}→ \*\*—\*\* _\(not answered; suggested: Yes\)_/);
+  assert.doesNotMatch(text, /suggestion confirmed/);
+  assert.ok(text.endsWith('\n```am-reply-meta\n{"id":"007","flag":"true","n":"1e3"}\n```\n'), JSON.stringify(result));
+  assert.ok(result.view?.includes('{"id":"007","flag":"true","n":"1e3"}'));
+  await evaluate('localStorage.clear()');
+});
+
 test('reply: picks and comments become one reply, and both survive a reload', { skip: SKIP }, async () => {
   await load();
   assert.equal(await evaluate('document.querySelectorAll(".am-comment-btn").length'), 4);
