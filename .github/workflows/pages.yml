@@ -1,6 +1,15 @@
 name: Pages
 
 # Build the project website (npm run site) and publish site/dist to GitHub Pages.
+#
+# Fork note (reeschan/answer-me-with-any):
+# Both jobs are limited to the upstream repo. On this fork, GitHub Pages is not
+# enabled, so the inherited schedule built successfully and then failed at deploy
+# with "Failed to create deployment (status: 404) ... Ensure GitHub Pages has been
+# enabled". The action deploys to the *current* repo, not to QingYunA's site.
+# If you later want Pages on the fork, change the `if:` below to
+# github.repository == 'reeschan/answer-me-with-any' and enable Pages
+# (Settings → Pages → Source: GitHub Actions).
 on:
   push:
     branches: [main]
@@ -31,6 +40,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.repository == 'QingYunA/answer-me-with-html'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -50,6 +60,7 @@ jobs:
           path: site/dist
 
   deploy:
+    if: github.repository == 'QingYunA/answer-me-with-html'
     needs: build
     runs-on: ubuntu-latest
     environment:

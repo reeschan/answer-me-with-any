@@ -1,0 +1,190 @@
+name: Sync upstream
+
+# Once a day, if QingYunA/answer-me-with-html's default branch has moved ahead of
+# this fork, merge it onto a sync branch and open (or update) a PR into main.
+# The fork has diverged (skill rename, reply-meta, --format md, Japanese README),
+# so this is a real merge, not a reset to upstream. Existing conflict resolutions
+# on an open sync PR are kept and new upstream commits are merged on top.
+on:
+  schedule:
+    # 07:17 Asia/Tokyo
+    - cron: '17 22 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  sync:
+    if: github.repository == 'reeschan/answer-me-with-any'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Prefer a PAT so (1) workflow-file changes from upstream can be pushed,
+      # (2) the resulting PR actually triggers CI. GITHUB_TOKEN cannot do (1)
+      # when .github/workflows changes, and PRs it opens do not trigger other
+      # workflows. Secret name: SYNC_UPSTREAM_TOKEN.
+      GH_TOKEN: ${{ secrets.SYNC_UPSTREAM_TOKEN || github.token }}
+      UPSTREAM_REPO: QingYunA/answer-me-with-html
+      UPSTREAM_BRANCH: main
+      DEFAULT_SYNC_BRANCH: sync/upstream
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.SYNC_UPSTREAM_TOKEN || github.token }}
+
+      - name: Fetch upstream and decide whether to open or update a PR
+        id: plan
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin
+          git fetch "https://github.com/${UPSTREAM_REPO}.git" "${UPSTREAM_BRANCH}:refs/remotes/upstream/${UPSTREAM_BRANCH}"
+
+          UPSTREAM_SHA=$(git rev-parse "refs/remotes/upstream/${UPSTREAM_BRANCH}")
+          MAIN_SHA=$(git rev-parse origin/main)
+          SHORT=$(git rev-parse --short "$UPSTREAM_SHA")
+          echo "upstream_sha=$UPSTREAM_SHA" >> "$GITHUB_OUTPUT"
+          echo "upstream_short=$SHORT" >> "$GITHUB_OUTPUT"
+
+          if git merge-base --is-ancestor "$UPSTREAM_SHA" "$MAIN_SHA"; then
+            echo "main already contains upstream ${SHORT}. Nothing to do."
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Reuse an open sync PR if one exists, so earlier conflict resolution stays.
+          mapfile -t pr_lines < <(gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --json number,headRefName,title,labels --jq '
+            .[] | select(
+              (.labels | map(.name) | index("upstream-sync") != null)
+              or (.headRefName | test("^(sync/upstream|cursor/upstream-)"))
+              or (.title | test("upstream|上流"; "i"))
+            ) | "\(.number)\t\(.headRefName)"
+          ')
+          if [ "${#pr_lines[@]}" -gt 0 ]; then
+            PR_NUMBER="${pr_lines[0]%%$'\t'*}"
+            BRANCH="${pr_lines[0]#*$'\t'}"
+            echo "Reusing open PR #${PR_NUMBER} on branch ${BRANCH}"
+            echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+            git checkout -B "$BRANCH" "origin/${BRANCH}"
+          else
+            PR_NUMBER=""
+            BRANCH="$DEFAULT_SYNC_BRANCH"
+            echo "Starting a new sync branch ${BRANCH} from origin/main"
+            git checkout -B "$BRANCH" origin/main
+          fi
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+
+          if git merge-base --is-ancestor "$UPSTREAM_SHA" HEAD; then
+            echo "Branch ${BRANCH} already contains upstream ${SHORT}."
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # If main has moved since this sync branch was created, merge it first.
+          if ! git merge-base --is-ancestor "$MAIN_SHA" HEAD; then
+            if ! git merge --no-edit --no-ff "$MAIN_SHA"; then
+              git diff --name-only --diff-filter=U | tee "$RUNNER_TEMP/conflicts-main.txt"
+              git merge --abort
+              echo "::error::Could not merge origin/main into ${BRANCH}. Resolve the existing sync PR first."
+              echo "needed=false" >> "$GITHUB_OUTPUT"
+              exit 1
+            fi
+          fi
+
+          if git merge --no-edit --no-ff -m "Merge upstream ${UPSTREAM_REPO} ${SHORT} into the fork" "$UPSTREAM_SHA"; then
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+            echo "conflict=false" >> "$GITHUB_OUTPUT"
+          else
+            git diff --name-only --diff-filter=U | tee "$RUNNER_TEMP/conflicts.txt"
+            git merge --abort
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+            echo "conflict=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Push the merge and open or update the pull request
+        if: steps.plan.outputs.needed == 'true' && steps.plan.outputs.conflict == 'false'
+        env:
+          BRANCH: ${{ steps.plan.outputs.branch }}
+          PR_NUMBER: ${{ steps.plan.outputs.pr_number }}
+          SHORT: ${{ steps.plan.outputs.upstream_short }}
+          UPSTREAM_SHA: ${{ steps.plan.outputs.upstream_sha }}
+        run: |
+          set -euo pipefail
+          if ! git push origin "$BRANCH"; then
+            echo "::error::git push failed. If upstream changed files under .github/workflows, GITHUB_TOKEN cannot push them. Add a repo secret SYNC_UPSTREAM_TOKEN (classic PAT with repo and workflow scopes, or a fine-grained token with Contents, Pull requests, and Workflows write on this repo) and rerun."
+            exit 1
+          fi
+
+          TITLE="上流 ${UPSTREAM_REPO} の更新を取り込む (${SHORT})"
+          COMPARE="https://github.com/${GITHUB_REPOSITORY}/compare/main...${BRANCH}"
+          BODY=$(cat <<MD
+          ## 概要
+          上流 [${UPSTREAM_REPO}](https://github.com/${UPSTREAM_REPO}) の \`${UPSTREAM_BRANCH}\` が進んだので、この fork の \`main\` へ取り込む PR です。
+
+          - 上流の先端: [\`${SHORT}\`](https://github.com/${UPSTREAM_REPO}/commit/${UPSTREAM_SHA})
+          - この PR は本物の merge コミットです（fork 側の変更はリセットしません）
+          - 自動実行: \`.github/workflows/sync-upstream.yml\`
+
+          fork 固有の変更（スキル名 \`answer-me-with-any\`、reply-meta、\`--format md\`、日本語 README など）を確認してからマージしてください。
+
+          \`pages.yml\` が上流側で上書きされる場合は、ジョブの \`if: github.repository == 'QingYunA/answer-me-with-html'\` ガードを残してください。ガードが消えると、この fork の Pages デプロイがまた 404 で失敗します。
+
+          比較: ${COMPARE}
+          MD
+          )
+
+          gh label create upstream-sync --repo "$GITHUB_REPOSITORY" --color 0E8A16 --description "Automated upstream sync" 2>/dev/null || true
+
+          if [ -n "${PR_NUMBER:-}" ]; then
+            gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"
+            gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --add-label upstream-sync || true
+            gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "上流が \`${SHORT}\` まで進んだので、この PR のブランチに merge しました。"
+            echo "Updated PR #${PR_NUMBER}"
+          else
+            url=$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" --state open --json url --jq '.[0].url // empty')
+            if [ -z "$url" ]; then
+              url=$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" --title "$TITLE" --body "$BODY" --label upstream-sync)
+            else
+              num=${url##*/}
+              gh pr edit "$num" --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body "$BODY"
+            fi
+            echo "Pull request: $url"
+          fi
+
+      - name: Report a merge conflict without overwriting the branch
+        if: steps.plan.outputs.needed == 'true' && steps.plan.outputs.conflict == 'true'
+        env:
+          BRANCH: ${{ steps.plan.outputs.branch }}
+          PR_NUMBER: ${{ steps.plan.outputs.pr_number }}
+          SHORT: ${{ steps.plan.outputs.upstream_short }}
+          UPSTREAM_SHA: ${{ steps.plan.outputs.upstream_sha }}
+        run: |
+          set -euo pipefail
+          FILES=$(cat "$RUNNER_TEMP/conflicts.txt" 2>/dev/null || true)
+          COMPARE="https://github.com/${GITHUB_REPOSITORY}/compare/main...QingYunA:answer-me-with-html:main"
+          MESSAGE=$(cat <<MD
+          上流 \`${SHORT}\` (\`${UPSTREAM_SHA}\`) をブランチ \`${BRANCH}\` に merge しようとしましたが、衝突がありました。ブランチは上書きしていません。
+
+          衝突したファイル:
+          \`\`\`
+          ${FILES}
+          \`\`\`
+
+          比較: ${COMPARE}
+          MD
+          )
+          if [ -n "${PR_NUMBER:-}" ]; then
+            gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$MESSAGE"
+          fi
+          echo "$MESSAGE"
+          echo "::error::Upstream merge has conflicts. Resolve them on the sync branch (or existing PR) and rerun."
+          exit 1
