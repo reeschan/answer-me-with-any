@@ -26,6 +26,8 @@ export default {
       raw: 'Kopyalanacak metni göster', preview: 'Önizleme',
       count: { answered: 'Yanıtlanan: {n}', comments: 'Yorum: {n}', remarks: 'İşaret: {n}' },
     },
+    replyMeta: { summary: 'Yanıt meta verileri' },
+    chat: { htmlOnly: 'Bu şekil yalnızca HTML sayfasında', multi: 'birden fazla seçilebilir' },
     closeAfter: { closing: 'Bu sekme {n} sn içinde kapanacak', keep: 'Açık kalsın', closeFailed: 'Yanıt kopyalandı. Bu sekmeyi artık kapatabilirsiniz.' },
     toc: 'İçindekiler', flow: 'Akış şeması', state: 'Durum makinesi diyagramı', sequence: 'Sıralama diyagramı', er: 'Varlık-ilişki diyagramı', class: 'Sınıf diyagramı', colon: ': ', sep: ', ',
     expand: 'Diyagramı büyüt', close: 'Kapat', diagram: 'Diyagram görüntüleyici',
