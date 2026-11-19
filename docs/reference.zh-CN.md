@@ -52,9 +52,89 @@ A -> B: 标签
 
 空回复仍为空。没有信封的稿件生成的页面和回复与之前相同。对于 `template: video`，条目会经过验证，但不会显示或附加到回复中。
 
+## 类图与接口定义
+
+代码结构使用 `class`，数据库实体使用 `er`，HTTP / RPC 接口使用 `api`。完整示例见 [contracts.md](../examples/contracts.md)。
+
+````markdown
+```class LR
+abstract Entity
+  +id: string
+class User
+  -email: string
+  +save(): void
+interface Store
+  +find(id: string): User
+User --|> Entity
+User ..> Store: uses
+```
+````
+
+- 在行首声明 `class`、`interface`、`abstract` 或 `enum`。只写名称时表示普通类；名称前的 `*` 表示高亮。
+- 缩进属性和方法。可见性、类型和签名按原文显示。去掉可见性标记后，以 `名称(` 开头的成员放在方法分区；属性类型中的括号不表示方法。
+- 关系支持 `--|>` 继承、`..|>` 实现、`*--` 组合、`o--` 聚合、`-->` 关联、`..>` 依赖和 `--` 普通关联。箭头在右端，菱形在左端；可用 `: 标签` 标注连线。
+- 关系两端都必须声明。支持自关联和平行连线。方向为 `TB`（默认）、`LR`、`BT` 或 `RL`。
+
+````markdown
+```api
+GET /users/{id}
+path
+  id string required | 用户 ID
+query
+  include string optional
+response 200 User
+  email string required
+response 404 Error
+  message string required
+```
+
+```api
+RPC users.UserService/GetUser
+request GetUserRequest
+  id string required
+response OK User
+  email string \| null optional
+response NOT_FOUND
+```
+````
+
+- 每个 `api` 块可以定义同一需求涉及的多个接口，在行首开始下一个接口。HTTP 使用大写方法和 `/路径`；RPC 使用 `RPC` 和服务方法名。
+- 分区支持 `path`、`query`、`headers`、`request [类型]` 和 `response 状态 [类型]`。RPC 使用 `request` 和 `response`。HTTP 响应状态码为 100 至 599；RPC 支持状态名。响应可以省略字段，表示空响应体。
+- 缩进字段，格式为 `名称 类型 [required|optional] | 说明`。类型、嵌套字段路径和说明按纯文本显示。必填性列直接显示“必填”或“可选”。未声明的字段显示短横线；整张表均未声明时省略此列。
+- 类型中的竖线写成 `\|`。例如 `email string \| null optional | 联系方式` 表示联合类型 `string | null`；第一个未转义的 `|` 开始说明。
+- 标签跟随页面语言。类图复用现有主题、缩放和图示查看器；接口字段使用语义表格。两种组件都支持离线页面。
+- 组件只展示定义，不发送请求，也不导入 OpenAPI 或 protobuf 文件。类图中的 `+` / `-` 表示可见性，不表示变更标记。
+
+同一需求涉及多个接口时，可以在接口、分区或缩进字段前加 `+`、`-`、`~` 和空格：
+
+````markdown
+```api
+~ GET /users/{id}
+response 200 User
+  id string required
+  - email string optional
+  + email string required
+~ RPC users.UserService/GetUser
+response OK User
+  - email string optional
+  + email string required
++ POST /users/batch
+request BatchRequest
+  ids string[] required
+- GET /v1/users/{id}
+response 200 User
+```
+````
+
+一个「改前 / 变更 / 改后」开关控制块内所有接口。改前隐藏新增接口、分区和字段；改后隐藏已删除的内容。未变更内容在两个视图中都保留。隐藏内容不占空白。新增或删除父项时，子项继承标记，冲突标记会报错。`~` 只标记当前项，不传给子项。计数包含继承的标记。要展示准确旧值和新值，请用 `-` 写旧定义，用 `+` 写新定义；单独的 `~` 无法还原旧值。路径、类型、必填状态和响应状态码都使用同一规则。
+
+完整语法：`am help class`、`am help er`、`am help api`。
+
 ## 在页面上回复
 
 每个页面都有**回复**按钮。读者可以在任意面板上写评论（面板标题栏里的气泡按钮），然后把一段 Markdown 回复复制给 Agent。刷新页面后，选择和评论都还在。读者作答、评论或标注后，页面底部会出现一条栏，显示各项数量，一键复制回复；回复面板默认显示渲染后的回复，将被复制的 Markdown 折叠在下方。
+
+工具栏还有一个**复制为图片**按钮：把整页画成 PNG 并放进系统剪贴板。它只在 Chromium 中出现，包括嵌在应用里的 Chromium（Electron、WebView2）；Firefox 和 Safari 无法可靠地把页面栅格化，因此在那里按钮保持隐藏。页面无法把图片写进剪贴板时（不在本地文件、`localhost` 或 HTTPS 这类安全上下文中、WebView 没有剪贴板 API，或剪贴板拒绝图片），会改为下载 PNG。在终端里可以用 `am export --png` 做同样的事。
 
 **标注**按钮打开后，读者可以点击段落、列表项、引用、代码块、表格或 $$ 公式块，选一个类型（建议、保留、疑问、关注），也可以写一句批注。标注显示在该块上，刷新后仍在，并在回复的“标注”一节里带上该块开头的引文返回。页面标题和面板标题不能标注，请用面板评论。
 
@@ -72,6 +152,7 @@ A -> B: 标签
 
 - 第一行是问题。每个选项以 `*`（建议项，带标签；所有选项开始时都不选中）或 `-` 开头，写 2 到 6 个选项。
 - 单选必须有且只有一个 `*`。`ask multi` 允许多选，`*` 标出建议的选项，它们开始时也不勾选。
+- 选项可以带一个预览：在选项下缩进写一个 `:::` 块。块里可以是任何组件，也可以是 `html` 或 `svg`；只有图片能帮上忙时才加。`ask cards` 把选项排成网格，每个预览成为卡片的画布。
 - 回复会写明每个决定是读者改过的、确认了建议，还是没有作答。评论和标注的批注原文以 `>` 引用的形式返回。
 
 完整写法：`am help ask`。
@@ -243,7 +324,7 @@ am export page.html --pdf page.pdf --png out/
 
 标签按你写的原样输出：`zh-tw` 和 `zh_TW` 都会写成 `zh-TW`。空值、`und` 或无效的值会被忽略，由正文决定。
 
-从右到左书写的语言（`he`、`ar`、`fa`、`ur`、`yi`）还会得到 `<html dir="rtl">`。页面整体镜像：正文、面板、表格、大纲条（`left` 和 `right` 随之镜像）和工具栏都从右侧开始；`flow` 和 `sequence` 图按镜像绘制，第一个节点或参与者在右边，箭头指向左边；时间线、树和限制条也从右侧开始。代码块、diff 和行内代码保持从左到右；不含从右到左字母的文字片段（如路径 `src/`、标签开头的键 `lint:`、域名、带符号的数字）也保持从左到右，标点留在原来写的位置。希伯来文有自己的界面文案、常用稿头键（`author`、`date`、`source`、`version` 等）的希伯来文名称，以及“日.月.年”格式的生成日期；其他从右到左的语言使用英文文案。视频页（`am video`）遵循同一规则：标题块、各场景、字幕、和章节条都从右侧开始，整个控制栏（播放键、时钟、进度条、倍速和导出）则像常见播放器那样保持从左到右。导出的 MP4 和 WebM 带有镜像后的画面。
+从右到左书写的语言（`he`、`ar`、`fa`、`ur`、`yi`）还会得到 `<html dir="rtl">`。页面整体镜像：正文、面板、表格、大纲条（`left` 和 `right` 随之镜像）和工具栏都从右侧开始；`flow`、`state`、`er` 和 `sequence` 图按镜像绘制，第一个节点或参与者在右边，箭头指向左边；时间线、树和限制条也从右侧开始。代码块、diff 和行内代码保持从左到右；不含从右到左字母的文字片段（如路径 `src/`、标签开头的键 `lint:`、域名、带符号的数字）也保持从左到右，标点留在原来写的位置。希伯来文有自己的界面文案、常用稿头键（`author`、`date`、`source`、`version` 等）的希伯来文名称，以及“日.月.年”格式的生成日期；其他从右到左的语言使用英文文案。视频页（`am video`）遵循同一规则：标题块、各场景、字幕、和章节条都从右侧开始，整个控制栏（播放键、时钟、进度条、倍速和导出）则像常见播放器那样保持从左到右。导出的 MP4 和 WebM 带有镜像后的画面。
 
 | 正文的文字 | 识别为 |
 | :--- | :--- |
@@ -257,7 +338,7 @@ am export page.html --pdf page.pdf --png out/
 
 打补丁（`am patch`）的页面会保留原来的语言，除非稿件里声明了语言。
 
-图表里的文字按各自文字系统的单位换行：汉字、假名和全角字符一字一单位；用空格分词的文字按词换行；不用空格分词的文字（泰文、老文、高棉文、缅甸文）按词典分词，长句不会把节点撑宽。整行放不下的词会退回到按字形簇（grapheme）拆分，组合符号不会和基字符分开。在 `flow` 的节点或边标签里写字面量 `\n` 可以强制换行；强制换行后的每一行仍按宽度换行。分组标题保持原样，不参与换行。
+图表里的文字按各自文字系统的单位换行：汉字、假名和全角字符一字一单位；用空格分词的文字按词换行；不用空格分词的文字（泰文、老文、高棉文、缅甸文）按词典分词，长句不会把节点撑宽。整行放不下的词会退回到按字形簇（grapheme）拆分，组合符号不会和基字符分开。在 `flow` 或 `state` 的节点或边标签里写字面量 `\n` 可以强制换行；强制换行后的每一行仍按宽度换行。分组标题保持原样，不参与换行。
 
 写作检查按语言走。中文、英文和日文保持原有规则。其他语言只用语言中立的规则：句长（按词数计，中日文按字数计）和段长。不用空格分词的文字，按分词器找到的词计句长，和图表换行用的是同一份文字列表。
 
@@ -299,11 +380,11 @@ am export page.html --pdf page.pdf --png out/
 
 ### 图表变量
 
-主题可以用变量（而不是选择器）改变图表内部的样子：flow、sequence、er，tree 的方框，以及 chart 的柱子、折线和扇区。把它们写进 `tokens`，所有图表都会跟着变。这些变量全部可选：一个都不写的主题，图表和以前完全一样；旧版本会忽略它们。
+主题可以用变量（而不是选择器）改变图表内部的样子：flow、state、sequence、er，tree 的方框，以及 chart 的柱子、折线和扇区。把它们写进 `tokens`，所有图表都会跟着变。这些变量全部可选：一个都不写的主题，图表和以前完全一样；旧版本会忽略它们。
 
 | 部分 | 变量 | 默认值 |
 | :--- | :--- | :--- |
-| 节点（flow、er、tree 方框） | `--node-fill`、`--node-stroke`、`--node-width`、`--node-radius`、`--node-shadow`、`--node-text` | `--paper`、`--line`、`--bw`、3px（tree 方框：`--radius`）、无、`--ink` |
+| 节点（flow、state、er、tree 方框） | `--node-fill`、`--node-stroke`、`--node-width`、`--node-radius`、`--node-shadow`、`--node-text` | `--paper`、`--line`、`--bw`、3px（state：8px；tree 方框：`--radius`）、无、`--ink` |
 | 高亮节点（`*`） | `--hi-fill`、`--hi-stroke`、`--hi-text` | `--accent-bg`、`--accent`、`--accent` |
 | 连线与消息 | `--edge-color`、`--edge-width`、`--edge-label` | `--ink-2`、1.3、`--accent` |
 | 时序图参与者（含 `== 分隔 ==` 的框） | `--actor-fill`、`--actor-stroke`、`--actor-text` | `--node-fill`、`--node-stroke`、`--node-text` |
@@ -385,7 +466,7 @@ am serve --tailscale  # 只监听 Tailscale 地址；tailnet 内的任何设备�
 **清理**：页面、视频和配音缓存都存在 `~/.answer-me-with-html/`。目录超过 200 MB，或超过 20 MB 且 30 天没清理过，Agent 会问你要不要清理，每周最多问一次。没有你的同意，什么都不会删。
 
 - `/answer-me-with-any:clean`（插件），或者直接说"清理一下页面"：先预演，再问你。
-- `am clean`：删除 30 天前的页面、视频和存下的草稿，清空配音缓存。`--days N` 改天数，`--all` 删除全部页面、视频和草稿，`--dry-run` 只看不删。配置和主题始终保留。如果 `pages`、`videos` 或 `cache` 本身是软链接，会被跳过：`am clean` 不会碰链接指向的文件，用量统计和清理提示也不再计入。如果这些目录无法遍历（比如没有读权限），同样会被跳过：其中的文件不计入用量统计和清理提示，显示的大小可能低于实际占用，清理也不会删除它们。
+- `am clean`：删除 30 天前的页面、视频和存下的草稿，清空配音缓存。`--days N` 改天数，`--all` 删除全部页面、视频和草稿，`--dry-run` 只看不删。配置和主题始终保留。如果 `pages`、`videos` 或 `cache` 本身是软链接，会被跳过：`am clean` 不会碰链接指向的文件，用量统计和清理提示也不再计入。如果这些目录无法遍历（比如没有读权限），同样会被跳过：其中的文件不计入用量统计和清理提示，显示的大小可能低于实际占用，清理也不会删除它们。使用自定义 `pages_dir` 时，只会删除其中名为 `<slug>-<stamp>.html` 的页面文件，你的其他文件不会被删除。
 
 **旧的高频模式插件。** 仓库里已经删掉它，但你本机的副本会一直注入提醒，直到你卸载。先执行 `/plugin uninstall answer-me-with-html-always@answer-me-with-html`，再按 [README](../README.zh-CN.md#高频模式推荐) 加上高频模式的规则。
 
@@ -399,10 +480,11 @@ am serve --tailscale  # 只监听 Tailscale 地址；tailnet 内的任何设备�
 | `style` | `80` | 写作检查：`off`、`80`（只提醒）或 `strict`（不达标不生成） |
 | `format` | `html` | `am render` 生成什么：`html`（页面）或 `md`（把同样的内容作为聊天用的 Markdown 输出到 stdout，不生成页面）。`--format` 只改这一次 |
 | `scale` | `1` | 页面文字大小：0.8–1.5，步长 0.05。1.2 表示放大 20%；图表跟着变大。工具栏的 A− / A+ 也能调整；选择会记在这个浏览器里，并优先于这个设置，但在 `am serve` 下只在当前标签页内有效 |
+| `pages_dir` | 空 | 生成页面的输出目录。留空表示数据目录下的 `pages/`；开头的 `~` 表示你的主目录，相对路径按数据目录解析。`am render`、`am theme check`、`--replace` 和 `am serve` 都会跟随它。`am clean` 只删除它生成的 `<slug>-<stamp>.html` 文件，你放在该目录里的其他文件不会被删 |
 | `update_check` | `on` | 每天向 GitHub 查一次新版本并提醒你，不会自己更新 |
 | `close_after_reply` | `off` | 复制回复后 3 秒关闭页面标签页，带倒计时和「保持打开」按钮。见下方说明 |
 | `colophon` | `on` | 在标题上方显示「Generated by Answer me with HTML · 时间 · ★ Star on GitHub」这一行。设为 `off` 后，之后生成或 patch 的页面不再带这一行；`generator` meta 标签保留 |
-| `voice` | `auto` | 视频配音：`auto`（有 `ELEVENLABS_API_KEY` 用 ElevenLabs，否则用系统语音）、`elevenlabs`、`local`、`system` 或 `off` |
+| `voice` | `auto` | 视频配音：`auto`（有 `ELEVENLABS_API_KEY` 用 ElevenLabs，否则用系统语音）、`elevenlabs`、`local`、`cmd`（`AM_TTS_CMD` 里的命令行 TTS，见[命令行配音](video.zh-CN.md)）、`system` 或 `off` |
 
 配置保存在 `~/.answer-me-with-html/config.json`。稿件里写明的主题优先于默认值。`--open` 和 `--no-open` 只影响这一次。
 

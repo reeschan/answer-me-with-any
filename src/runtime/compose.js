@@ -11,7 +11,7 @@ const unimport = (code) => code.replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js'
 
 export function composeRuntime(read, { replyMeta = false } = {}) {
   const meta = replyMeta ? `${unexport(read('reply-meta-text.js'))}\n${read('reply-meta.js')}\n` : '';
-  const scripts = `${read('page.js')}(() => {\n${unexport(read('reply-text.js'))}\n${unexport(read('rtl-letter.js'))}\n${unimport(unexport(read('reply-view.js')))}\n${meta}${read('reply.js')}})();\n(() => {\n${unexport(read('remark-text.js'))}\n${read('remark.js')}})();\n(() => {\n${unexport(read('layout-plan.js'))}\n${read('layout-dom.js')}})();\n${read('outline.js')}`;
+  const scripts = `${read('page.js')}(() => {\n${unexport(read('reply-text.js'))}\n${unexport(read('rtl-letter.js'))}\n${unimport(unexport(read('reply-view.js')))}\n${meta}${read('reply.js')}})();\n(() => {\n${unexport(read('remark-text.js'))}\n${read('remark.js')}})();\n(() => {\n${unexport(read('layout-plan.js'))}\n${read('layout-dom.js')}})();\n${read('outline.js')}\n${read('copy-image.js')}`;
   // math-text.js is read by the reply script and by the remark script, so it sits around both.
   return `(() => {\n${unexport(read('math-text.js'))}\n${scripts}})();\n`;
 }
