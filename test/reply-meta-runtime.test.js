@@ -59,3 +59,10 @@ test('inline and development assets have the same exports and metadata values', 
   assert.equal(inline.RUNTIME_REPLY_META_JS, assets.RUNTIME_REPLY_META_JS.replace(/\r\n?/g, '\n'));
   assert.equal(inline.REPLY_META_CSS, assets.REPLY_META_CSS.replace(/\r\n?/g, '\n'));
 });
+
+test('Copy as image leaves the reply metadata out of the picture without touching the default runtime', () => {
+  const chrome = read('copy-image.js').match(/const CHROME = '([^']*)'/);
+  assert.ok(chrome, 'CHROME selector list is present');
+  assert.ok(chrome[1].split(',').map((s) => s.trim()).includes('[data-am-no-image]'));
+  assert.match(read('reply-meta.js'), /setAttribute\?\.\('data-am-no-image'/);
+});

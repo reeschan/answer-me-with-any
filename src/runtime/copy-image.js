@@ -86,7 +86,7 @@
   };
 
   // The page's chrome means nothing in a picture: remove the controls and the navigational rail from the clone.
-  const CHROME = '.am-code-copy, .am-diagram-expand, .am-table-controls, [class*="delta-switch"], .am-toc, .am-remark-hover, .am-mark-note';
+  const CHROME = '.am-code-copy, .am-diagram-expand, .am-table-controls, [class*="delta-switch"], .am-toc, .am-remark-hover, .am-mark-note, [data-am-no-image]';
 
   function buildSvg(width, height) {
     const clone = main.cloneNode(true);
