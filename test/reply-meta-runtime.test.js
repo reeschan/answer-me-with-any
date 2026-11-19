@@ -11,7 +11,8 @@ const read = (file) => readFileSync(new URL(`../src/runtime/${file}`, import.met
 const unimport = (code) => code.replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js';\r?\n/gm, '');
 
 test('default composition retains its original bytes and metadata composition parses', () => {
-  const scripts = `${read('page.js')}(() => {\n${unexport(read('reply-text.js'))}\n${unexport(read('rtl-letter.js'))}\n${unimport(unexport(read('reply-view.js')))}\n${read('reply.js')}})();\n(() => {\n${unexport(read('remark-text.js'))}\n${read('remark.js')}})();\n(() => {\n${unexport(read('layout-plan.js'))}\n${read('layout-dom.js')}})();\n${read('outline.js')}`;
+  const scripts = `${read('page.js')}(() => {\n${unexport(read('reply-text.js'))}\n${unexport(read('rtl-letter.js'))}\n${unimport(unexport(read('reply-view.js')))}\n${read('reply.js')}})();\n(() => {\n${unexport(read('remark-text.js'))}\n${read('remark.js')}})();\n(() => {\n${unexport(read('layout-plan.js'))}\n${read('layout-dom.js')}})();\n${read('outline.js')}
+${read('copy-image.js')}`;
   const original = `(() => {\n${unexport(read('math-text.js'))}\n${scripts}})();\n`;
   assert.equal(composeRuntime(read), original);
   assert.equal(assets.RUNTIME_JS, original);
