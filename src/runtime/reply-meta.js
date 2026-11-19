@@ -3,6 +3,7 @@
   const element = document.querySelector('[data-am-reply-meta]');
   let entries = null;
   if (element) {
+    element.setAttribute?.('data-am-no-image', ''); // Copy as image leaves this block out of the picture (copy-image.js).
     try { entries = Object.entries(JSON.parse(element.getAttribute('data-am-reply-meta'))); } catch { /* Leave the reply unchanged. */ }
   }
   if (entries) {

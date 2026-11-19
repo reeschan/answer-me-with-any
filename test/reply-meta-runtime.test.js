@@ -11,7 +11,8 @@ const read = (file) => readFileSync(new URL(`../src/runtime/${file}`, import.met
 const unimport = (code) => code.replace(/^import \{[^}]*\} from '\.\/[\w-]+\.js';\r?\n/gm, '');
 
 test('default composition retains its original bytes and metadata composition parses', () => {
-  const scripts = `${read('page.js')}(() => {\n${unexport(read('reply-text.js'))}\n${unexport(read('rtl-letter.js'))}\n${unimport(unexport(read('reply-view.js')))}\n${read('reply.js')}})();\n(() => {\n${unexport(read('remark-text.js'))}\n${read('remark.js')}})();\n(() => {\n${unexport(read('layout-plan.js'))}\n${read('layout-dom.js')}})();\n${read('outline.js')}`;
+  const scripts = `${read('page.js')}(() => {\n${unexport(read('reply-text.js'))}\n${unexport(read('rtl-letter.js'))}\n${unimport(unexport(read('reply-view.js')))}\n${read('reply.js')}})();\n(() => {\n${unexport(read('remark-text.js'))}\n${read('remark.js')}})();\n(() => {\n${unexport(read('layout-plan.js'))}\n${read('layout-dom.js')}})();\n${read('outline.js')}
+${read('copy-image.js')}`;
   const original = `(() => {\n${unexport(read('math-text.js'))}\n${scripts}})();\n`;
   assert.equal(composeRuntime(read), original);
   assert.equal(assets.RUNTIME_JS, original);
@@ -57,4 +58,11 @@ test('inline and development assets have the same exports and metadata values', 
   assert.deepEqual(Object.keys(inline).sort(), Object.keys(assets).sort());
   assert.equal(inline.RUNTIME_REPLY_META_JS, assets.RUNTIME_REPLY_META_JS.replace(/\r\n?/g, '\n'));
   assert.equal(inline.REPLY_META_CSS, assets.REPLY_META_CSS.replace(/\r\n?/g, '\n'));
+});
+
+test('Copy as image leaves the reply metadata out of the picture without touching the default runtime', () => {
+  const chrome = read('copy-image.js').match(/const CHROME = '([^']*)'/);
+  assert.ok(chrome, 'CHROME selector list is present');
+  assert.ok(chrome[1].split(',').map((s) => s.trim()).includes('[data-am-no-image]'));
+  assert.match(read('reply-meta.js'), /setAttribute\?\.\('data-am-no-image'/);
 });

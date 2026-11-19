@@ -52,9 +52,89 @@ The entries appear in a collapsed section in the page header, rather than in the
 
 An empty reply stays empty. Drafts without an envelope produce the same page and reply as before. For `template: video`, entries are validated but neither displayed nor attached to a reply.
 
+## Class diagrams and interface contracts
+
+Use `class` for code structure, `er` for database entities, and `api` for HTTP / RPC contracts. A complete example is [contracts.en.md](../examples/contracts.en.md).
+
+````markdown
+```class LR
+abstract Entity
+  +id: string
+class User
+  -email: string
+  +save(): void
+interface Store
+  +find(id: string): User
+User --|> Entity
+User ..> Store: uses
+```
+````
+
+- Declare `class`, `interface`, `abstract` or `enum` at column 0; a bare name means `class`. Prefix a name with `*` to highlight it.
+- Indent attributes and methods. Visibility, types and signatures are shown as written. A method starts with `name(` after its optional visibility sign; parentheses in a property type stay in the attributes compartment.
+- Relationships: `--|>` inheritance, `..|>` realization, `*--` composition, `o--` aggregation, `-->` association, `..>` dependency, `--` plain association. Arrowheads are at the right end; diamonds are at the left end. Add `: label` if needed.
+- Declare both ends of every relationship. Self-links and parallel links work. Directions are `TB` (default), `LR`, `BT` and `RL`.
+
+````markdown
+```api
+GET /users/{id}
+path
+  id string required | User ID
+query
+  include string optional
+response 200 User
+  email string required
+response 404 Error
+  message string required
+```
+
+```api
+RPC users.UserService/GetUser
+request GetUserRequest
+  id string required
+response OK User
+  email string \| null optional
+response NOT_FOUND
+```
+````
+
+- One `api` block can group the HTTP/RPC endpoints changed by one requirement; declare each at column 0. HTTP uses an uppercase method and a `/path`; RPC uses `RPC` and the service/method name.
+- Sections are `path`, `query`, `headers`, `request [Type]` and `response STATUS [Type]`. RPC uses `request` and `response`. HTTP response codes are 100-599; RPC supports named statuses. A response with no fields can describe an empty body.
+- Indent fields as `name type [required|optional] | description`. Types, nested field paths and descriptions are plain text. The Requirement column shows explicit Required or Optional labels. An unspecified value shows a dash when the column is present; tables with no explicit requirements omit the column.
+- Escape a literal type pipe as `\|`: write `email string \| null optional | Contact` for the union type `string | null`. The first unescaped `|` starts the description.
+- Labels follow the page language. Class diagrams use the existing theme tokens, scaling and diagram viewer; contract fields use semantic tables. Both render offline.
+- These blocks display definitions. They do not send requests or import OpenAPI / protobuf files. Class diagrams do not interpret `+` / `-` visibility signs as change markers.
+
+To show a coordinated API change, mark endpoints, sections or indented fields with `+`, `-` or `~` followed by a space:
+
+````markdown
+```api
+~ GET /users/{id}
+response 200 User
+  id string required
+  - email string optional
+  + email string required
+~ RPC users.UserService/GetUser
+response OK User
+  - email string optional
+  + email string required
++ POST /users/batch
+request BatchRequest
+  ids string[] required
+- GET /v1/users/{id}
+response 200 User
+```
+````
+
+One **Before / Changes / After** switch controls all endpoints in the block. Before hides added endpoints, sections and fields; After hides removed ones. Unchanged items stay in both views. Hidden HTML items take no space. The children of an added or removed item inherit its marker; contradictory markers are errors. `~` marks only its item, not its children. Counts include inherited markers. For exact before/after values, write `-` for the old definition and `+` for its replacement; `~` alone has no old value to reconstruct. This includes a change of path, type, requiredness or response status.
+
+Full syntax: `am help class`, `am help er`, `am help api`.
+
 ## Answer on the page
 
 Every page has a **Reply** button. The reader comments on any panel (the speech-bubble button in its title bar) and copies one Markdown reply back to the agent. Answers and comments survive a reload. Once the reader answers, comments or remarks, a bar at the bottom of the page shows the counts and copies the reply in one click; the Reply sheet shows the reply drawn, with the copied Markdown under a fold.
+
+The toolbar also has a **Copy as image** button. It draws the whole page into a PNG and copies it to the clipboard. It appears only in Chromium, including Chromium embedded in an app (Electron, WebView2); Firefox and Safari cannot rasterize the page reliably, and there the button stays hidden. Where the page cannot write images to the clipboard (outside a secure context such as a local file, `localhost` or HTTPS, in a WebView without the Clipboard API, or when the clipboard refuses the image), the page downloads the PNG instead. From a terminal, `am export --png` does the same job.
 
 The **Remark** button turns on block marking. While it is on, the reader clicks a paragraph, list item, quote, code block, table or $$ formula block, picks a kind (suggestion, keep, question or concern) and may add a note. The mark shows on the block, survives a reload, and comes back in the reply under Remarks with the start of the block quoted. A page title or panel title takes no mark; use the panel comment for it.
 
@@ -72,6 +152,7 @@ Which cache do we use?
 
 - The first line is the question. Each option starts with `*` (the suggestion, shown with a tag; every option starts unselected) or `-`. Write 2 to 6 options.
 - One choice needs exactly one `*`. `ask multi` lets the reader pick several; `*` marks the options you suggest; they start unselected too.
+- An option may carry one preview: indent a `:::` block under it. The block takes any component, plus `html` and `svg`; add it only when a picture helps. `ask cards` lays the options out in a grid, so each preview becomes a card canvas.
 - The reply says for each decision whether the reader changed it, confirmed the suggestion, or did not answer it. Comment text and remark notes come back quoted with `>`.
 
 Full syntax: `am help ask`.
@@ -243,7 +324,7 @@ The language of a draft sets the page's `lang` attribute, the language of the bu
 
 A tag is written as you declare it: `zh-tw` and `zh_TW` both become `zh-TW`. An empty, `und` or invalid value is ignored and the text decides.
 
-A right-to-left language (`he`, `ar`, `fa`, `ur`, `yi`) also gets `<html dir="rtl">`. The page mirrors: text, panels, tables, the outline rail (`left` and `right` mirror) and the toolbar start from the right; `flow` and `sequence` diagrams are drawn as their mirror image, so the first node or participant is on the right and arrows point left; timelines, trees and limits bars start from the right. Code blocks, diffs and inline code stay left to right, and so does any run of text with no right-to-left letter (a path such as `src/`, a key such as `lint:` at the start of a label, a domain, a signed number), so its punctuation stays where it was written. Hebrew has its own labels, Hebrew names for common frontmatter keys (`author`, `date`, `source`, `version` ...) and a day.month.year render date; the other right-to-left languages use English labels. A video page (`am video`) follows the same rule: the title block, the scenes, the captions, and the chapter strip start from the right, while the controls row (play button, clock, progress bar, speed and export) stays left to right, as in common video players. Exported MP4 and WebM files carry the mirrored picture.
+A right-to-left language (`he`, `ar`, `fa`, `ur`, `yi`) also gets `<html dir="rtl">`. The page mirrors: text, panels, tables, the outline rail (`left` and `right` mirror) and the toolbar start from the right; `flow`, `state`, `er` and `sequence` diagrams are drawn as their mirror image, so the first node or participant is on the right and arrows point left; timelines, trees and limits bars start from the right. Code blocks, diffs and inline code stay left to right, and so does any run of text with no right-to-left letter (a path such as `src/`, a key such as `lint:` at the start of a label, a domain, a signed number), so its punctuation stays where it was written. Hebrew has its own labels, Hebrew names for common frontmatter keys (`author`, `date`, `source`, `version` ...) and a day.month.year render date; the other right-to-left languages use English labels. A video page (`am video`) follows the same rule: the title block, the scenes, the captions, and the chapter strip start from the right, while the controls row (play button, clock, progress bar, speed and export) stays left to right, as in common video players. Exported MP4 and WebM files carry the mirrored picture.
 
 | Script in the text | Detected as |
 | :--- | :--- |
@@ -257,7 +338,7 @@ Declare the language when you write a Latin-script language other than English, 
 
 A patched page keeps the language it had, unless the draft declares one.
 
-Diagram text wraps by the unit the script uses: one Han, kana or fullwidth character, one word where the script writes spaces, and one dictionary word for the scripts that write none (Thai, Lao, Khmer and Myanmar), so a long word does not push a node wider than its budget. A word that does not fit the line on its own falls back to graphemes, so a combining mark stays with its base character. In a `flow` node or edge label, a literal `\n` forces a line break; each forced line still wraps by width. Group titles keep the text as written.
+Diagram text wraps by the unit the script uses: one Han, kana or fullwidth character, one word where the script writes spaces, and one dictionary word for the scripts that write none (Thai, Lao, Khmer and Myanmar), so a long word does not push a node wider than its budget. A word that does not fit the line on its own falls back to graphemes, so a combining mark stays with its base character. In a `flow` or `state` node or edge label, a literal `\n` forces a line break; each forced line still wraps by width. Group titles keep the text as written.
 
 The writing check follows the language. Chinese, English and Japanese keep their rules. Any other language gets only the language-neutral ones: sentence length (in words, or in characters for CJK text) and paragraph length. A script that writes no space between words is measured in words found by the word segmenter, the same four scripts the diagrams wrap with.
 
@@ -299,11 +380,11 @@ The classes your `css` may target stay stable: a later version keeps every one o
 
 ### Diagram tokens
 
-A theme restyles what is inside a diagram (flow, sequence, er, the boxes of a tree, and the bars, lines and slices of a chart) with tokens, not with selectors: set them in `tokens` and every diagram follows. They are all optional. A theme that sets none draws the diagrams it always did, and an older version ignores them.
+A theme restyles what is inside a diagram (flow, state, sequence, er, the boxes of a tree, and the bars, lines and slices of a chart) with tokens, not with selectors: set them in `tokens` and every diagram follows. They are all optional. A theme that sets none draws the diagrams it always did, and an older version ignores them.
 
 | Part | Tokens | Default |
 | :--- | :--- | :--- |
-| Node (flow, er, tree box) | `--node-fill`, `--node-stroke`, `--node-width`, `--node-radius`, `--node-shadow`, `--node-text` | `--paper`, `--line`, `--bw`, 3px (the tree box: `--radius`), none, `--ink` |
+| Node (flow, state, er, tree box) | `--node-fill`, `--node-stroke`, `--node-width`, `--node-radius`, `--node-shadow`, `--node-text` | `--paper`, `--line`, `--bw`, 3px (state: 8px; the tree box: `--radius`), none, `--ink` |
 | Highlighted node (`*`) | `--hi-fill`, `--hi-stroke`, `--hi-text` | `--accent-bg`, `--accent`, `--accent` |
 | Edge and message | `--edge-color`, `--edge-width`, `--edge-label` | `--ink-2`, 1.3, `--accent` |
 | Sequence actor (and the box of a `== divider ==`) | `--actor-fill`, `--actor-stroke`, `--actor-text` | `--node-fill`, `--node-stroke`, `--node-text` |
@@ -385,7 +466,7 @@ am serve --tailscale  # listen on your Tailscale address only; open the links fr
 **Cleaning up.** Pages, videos and the narration cache build up in `~/.answer-me-with-html/`. If that folder grows past 200 MB, or passes 20 MB with no cleanup for 30 days, the agent asks once a week whether to clean it. Nothing is deleted without your OK.
 
 - `/answer-me-with-any:clean` (plugin), or say "clean up the pages", previews first and then asks.
-- `am clean` deletes pages, videos and saved drafts older than 30 days and empties the narration cache. `--days N` changes the cutoff, `--all` removes every page, video and draft, and `--dry-run` only shows what would go. Your settings and themes are always kept. If `pages`, `videos` or `cache` is itself a symlink, it is skipped: `am clean` never touches the files it points to, and the size count and cleanup hint ignore it. A folder that cannot be read is skipped too: its files are left out of the size count and the cleanup hint, so the size you see can be lower than the real use, and `am clean` does not delete them.
+- `am clean` deletes pages, videos and saved drafts older than 30 days and empties the narration cache. `--days N` changes the cutoff, `--all` removes every page, video and draft, and `--dry-run` only shows what would go. Your settings and themes are always kept. If `pages`, `videos` or `cache` is itself a symlink, it is skipped: `am clean` never touches the files it points to, and the size count and cleanup hint ignore it. A folder that cannot be read is skipped too: its files are left out of the size count and the cleanup hint, so the size you see can be lower than the real use, and `am clean` does not delete them. With a custom `pages_dir`, only page files named `<slug>-<stamp>.html` are deleted there; your other files stay.
 
 **Old always-on plugin.** It is gone from this repository, but your copy keeps adding the reminder until you remove it. Run `/plugin uninstall answer-me-with-html-always@answer-me-with-html`, then add the always-on rule from the [README](../README.md#always-on-mode-recommended).
 
@@ -399,10 +480,11 @@ am serve --tailscale  # listen on your Tailscale address only; open the links fr
 | `style` | `80` | Writing check: `off`, `80` (warn only) or `strict` (refuse to render) |
 | `format` | `html` | What `am render` makes: `html` (a page) or `md` (the same content as chat Markdown on stdout, no page). `--format` changes it for one run |
 | `scale` | `1` | Text size on the page: 0.8–1.5 in steps of 0.05. 1.2 makes text 20% larger; diagrams and charts grow with it. The toolbar's A− / A+ buttons change it too; the choice is remembered in this browser and wins over this setting, but under `am serve` it lasts for the tab only |
+| `pages_dir` | empty | Folder for generated pages. Empty means `pages/` in the data directory; a leading `~` is your home folder, and a relative path is inside the data directory. `am render`, `am theme check`, `--replace` and `am serve` all follow it. `am clean` deletes only the `<slug>-<stamp>.html` files it generated there, so other files in your folder stay |
 | `update_check` | `on` | Check GitHub for a new version once a day and mention it. Never updates by itself |
 | `close_after_reply` | `off` | Close the page tab 3 seconds after you copy the reply, with a countdown and a Keep open button. See the note below |
 | `colophon` | `on` | Show the "Generated by Answer me with HTML · time · ★ Star on GitHub" line above the title. `off` leaves it out of pages made or patched afterwards; the `generator` meta tag stays |
-| `voice` | `auto` | Video narration: `auto` (ElevenLabs if `ELEVENLABS_API_KEY` is set, else system voice), `elevenlabs`, `local`, `system` or `off` |
+| `voice` | `auto` | Video narration: `auto` (ElevenLabs if `ELEVENLABS_API_KEY` is set, else system voice), `elevenlabs`, `local`, `cmd` (the command-line TTS in `AM_TTS_CMD`, see [Command voice](video.md)), `system` or `off` |
 
 Settings live in `~/.answer-me-with-html/config.json`. A theme written in a draft beats the default. `--open` and `--no-open` affect one run only.
 
