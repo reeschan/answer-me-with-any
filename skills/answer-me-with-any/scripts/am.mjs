@@ -2006,6 +2006,8 @@ var tr_default = {
       preview: "\xD6nizleme",
       count: { answered: "Yan\u0131tlanan: {n}", comments: "Yorum: {n}", remarks: "\u0130\u015Faret: {n}" }
     },
+    replyMeta: { summary: "Yan\u0131t meta verileri" },
+    chat: { htmlOnly: "Bu \u015Fekil yaln\u0131zca HTML sayfas\u0131nda", multi: "birden fazla se\xE7ilebilir" },
     closeAfter: { closing: "Bu sekme {n} sn i\xE7inde kapanacak", keep: "A\xE7\u0131k kals\u0131n", closeFailed: "Yan\u0131t kopyaland\u0131. Bu sekmeyi art\u0131k kapatabilirsiniz." },
     toc: "\u0130\xE7indekiler",
     flow: "Ak\u0131\u015F \u015Femas\u0131",
